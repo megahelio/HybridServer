@@ -22,7 +22,13 @@ import es.uvigo.esei.dai.hybridserver.http.HTTPRequest;
 public class Launcher {
 	public static void main(String[] args) {
 		
-		String requestText = "GET /hello/world.html?country=Spain&province=Ourense&city=Ourense HTTP/1.1\\r\\n";
+		String requestText = "GET /hello.htm HTTP/1.1\r\n"
+				+ "User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\r\n"
+				+ "Host: www.tutorialspoint.com\r\n"
+				+ "Accept-Language: en-us\r\n"
+				+ "Accept-Encoding: gzip, deflate\r\n"
+				+ "Connection: Keep-Alive";
+		//System.out.println(requestText);
 
 		HTTPRequest a = new HTTPRequest(requestText);
 		
