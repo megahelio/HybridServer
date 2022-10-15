@@ -17,8 +17,16 @@
  */
 package es.uvigo.esei.dai.hybridserver;
 
+import es.uvigo.esei.dai.hybridserver.http.HTTPRequest;
+
 public class Launcher {
 	public static void main(String[] args) {
+		
+		String requestText = "GET /hello/world.html?country=Spain&province=Ourense&city=Ourense HTTP/1.1\\r\\n";
 
+		HTTPRequest a = new HTTPRequest(requestText);
+		
+		a.getHttpVersion();
+		
 	}
 }

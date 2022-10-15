@@ -19,7 +19,9 @@ package es.uvigo.esei.dai.hybridserver.http;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class HTTPRequest {
 
@@ -36,11 +38,15 @@ public class HTTPRequest {
 			aux = reader.read();
 		}
 	}
+	
+	public HTTPRequest(String reader) {
+		url = reader;
+	}
 
-	public HTTPRequestMethod getMethod() {
+	public HTTPRequestMethod getMethod(){
 
 		String list[] = url.split(" ");
-		
+
 		 for (HTTPRequestMethod c : HTTPRequestMethod.values()) {
 		        if (c.name().equals(list[0])) {
 		            return HTTPRequestMethod.valueOf(list[0]);
@@ -63,11 +69,15 @@ public class HTTPRequest {
 	public String[] getResourcePath() {
 		// TODO Auto-generated method stub
 		
-		String s = getResourceName();
+		String r = getResourceChain();
 		
-		String list[] = s.split("/");
+		String list[] = r.split("\\? ");
 		
-		return list;
+		String s = list[0];
+		
+		String list2[] = s.split("/");
+		
+		return list2;
 	}
 
 	public String getResourceName() {
@@ -82,12 +92,52 @@ public class HTTPRequest {
 
 	public Map<String, String> getResourceParameters() {
 		// TODO Auto-generated method stub
-		return null;
+		
+		String s = getResourceChain();
+		
+		Map<String, String> m = new LinkedHashMap<String, String>();
+		
+		if(!s.contains("?")) {
+			
+			return  m;
+			
+		}
+		
+		String list[] = s.split("\\?");
+		
+		s = list[1];
+		
+		list = s.split("&");
+		
+		
+		for(int i=0;i<list.length;i++) {
+			
+			
+			m.put(list[i].split("=")[0], list[i].split("=")[1]);
+			
+		}
+		
+		return m;
 	}
 
 	public String getHttpVersion() {
 		// TODO Auto-generated method stub
-		return null;
+		
+		String s = url.split(" ")[2];
+		
+		String separador = Pattern.quote("\\");
+		
+		String r = s.split(separador)[0];
+		
+		if(r.compareTo(HTTPHeaders.HTTP_1_1.getHeader())>0) {
+			
+			return r;
+			
+		}
+	
+		System.out.println(r+"   "+HTTPHeaders.HTTP_1_1.getHeader());
+		
+		return "";
 	}
 
 	public Map<String, String> getHeaderParameters() {
