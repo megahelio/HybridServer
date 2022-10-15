@@ -22,27 +22,62 @@ import java.io.Reader;
 import java.util.Map;
 
 public class HTTPRequest {
+
+	String url = "";
+
 	public HTTPRequest(Reader reader) throws IOException, HTTPParseException {
+
+		int aux = reader.read();
+
+		while (aux != -1) {
+
+			this.url += (char) aux;
+
+			aux = reader.read();
+		}
 	}
 
 	public HTTPRequestMethod getMethod() {
-		// TODO Auto-generated method stub
+
+		String list[] = url.split(" ");
+		
+		 for (HTTPRequestMethod c : HTTPRequestMethod.values()) {
+		        if (c.name().equals(list[0])) {
+		            return HTTPRequestMethod.valueOf(list[0]);
+		        }
+		    }
+
 		return null;
+		
 	}
 
 	public String getResourceChain() {
 		// TODO Auto-generated method stub
-		return null;
+		
+		
+		String list[] = url.split(" ");
+		
+		return list[1];
 	}
 
 	public String[] getResourcePath() {
 		// TODO Auto-generated method stub
-		return null;
+		
+		String s = getResourceName();
+		
+		String list[] = s.split("/");
+		
+		return list;
 	}
 
 	public String getResourceName() {
 		// TODO Auto-generated method stub
-		return null;
+		
+		String s = getResourceChain();
+		
+		String list[] = s.split("\\?");
+		
+		return list[0].substring(1, list[0].length());
 	}
 
 	public Map<String, String> getResourceParameters() {
@@ -62,17 +97,16 @@ public class HTTPRequest {
 
 	public String getContent() {
 		// TODO Auto-generated method stub
-		String tored = "Hybrid Server";
-		return tored;
+		return null;
 	}
 
 	public int getContentLength() {
 		// TODO Auto-generated method stub
-		return this.getContent().length();
+		return -1;
 	}
 
 	@Override
-	public String toString() {
+	public String toString(){
 		final StringBuilder sb = new StringBuilder(this.getMethod().name()).append(' ').append(this.getResourceChain())
 				.append(' ').append(this.getHttpVersion()).append("\r\n");
 
