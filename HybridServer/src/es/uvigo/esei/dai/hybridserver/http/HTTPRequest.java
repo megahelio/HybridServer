@@ -19,6 +19,8 @@ package es.uvigo.esei.dai.hybridserver.http;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -38,111 +40,142 @@ public class HTTPRequest {
 			aux = reader.read();
 		}
 	}
-	
+
 	public HTTPRequest(String reader) {
 		url = reader;
 	}
 
-	public HTTPRequestMethod getMethod(){
+	public HTTPRequestMethod getMethod() {
 
 		String list[] = url.split(" ");
 
-		 for (HTTPRequestMethod c : HTTPRequestMethod.values()) {
-		        if (c.name().equals(list[0])) {
-		            return HTTPRequestMethod.valueOf(list[0]);
-		        }
-		    }
+		for (HTTPRequestMethod c : HTTPRequestMethod.values()) {
+			if (c.name().equals(list[0])) {
+				return HTTPRequestMethod.valueOf(list[0]);
+			}
+		}
 
 		return null;
-		
+
 	}
 
 	public String getResourceChain() {
 		// TODO Auto-generated method stub
-		
-		
+
 		String list[] = url.split(" ");
-		
+
 		return list[1];
 	}
 
 	public String[] getResourcePath() {
 		// TODO Auto-generated method stub
-		
+
 		String r = getResourceChain();
-		
-		String list[] = r.split("\\? ");
-		
+
+		String list[] = r.split("\\?");
+
 		String s = list[0];
+
+		String[] aux = s.split("/");
 		
-		String list2[] = s.split("/");
+		if(aux.length!=0) {
+
+		String[] toRet = new String[aux.length - 1];
+
+		for (int i = 1; i < aux.length; i++) {
+			toRet[i - 1] = aux[i];
+		}
 		
-		return list2;
+		
+
+		return toRet;
+		
+		} else {
+			
+			String[] toRet = {};
+			
+			return toRet;
+			
+		}
 	}
 
 	public String getResourceName() {
 		// TODO Auto-generated method stub
-		
+
 		String s = getResourceChain();
-		
+
 		String list[] = s.split("\\?");
-		
+
 		return list[0].substring(1, list[0].length());
 	}
 
 	public Map<String, String> getResourceParameters() {
 		// TODO Auto-generated method stub
-		
+
 		String s = getResourceChain();
-		
+
 		Map<String, String> m = new LinkedHashMap<String, String>();
-		
-		if(!s.contains("?")) {
-			
-			return  m;
-			
+
+		if (!s.contains("?")) {
+
+			return m;
+
 		}
-		
+
 		String list[] = s.split("\\?");
-		
+
 		s = list[1];
-		
+
 		list = s.split("&");
-		
-		
-		for(int i=0;i<list.length;i++) {
-			
-			
+
+		for (int i = 0; i < list.length; i++) {
+
 			m.put(list[i].split("=")[0], list[i].split("=")[1]);
-			
+
 		}
-		
+
 		return m;
 	}
 
 	public String getHttpVersion() {
 		// TODO Auto-generated method stub
-		
+
 		String s = url.split(" ")[2];
-		
+
+		s = s.split("\r\n")[0];
+
 		String separador = Pattern.quote("\\");
-		
+
 		String r = s.split(separador)[0];
-		
-		if(r.compareTo(HTTPHeaders.HTTP_1_1.getHeader())>0) {
-			
+
+		if (r.compareTo(HTTPHeaders.HTTP_1_1.getHeader()) == 0) {
+
 			return r;
-			
+
 		}
-	
-		System.out.println(r+"   "+HTTPHeaders.HTTP_1_1.getHeader());
-		
+
 		return "";
 	}
 
 	public Map<String, String> getHeaderParameters() {
-		// TODO Auto-generated method stub
-		return null;
+
+		Map<String, String> m = new LinkedHashMap<String, String>();
+
+		String requestText = "POST / HTTP/1.1\r\n" + "Host: localhost\r\n"
+				+ "Content-Type: application/x-www-form-urlencoded\r\n" + "Content-Length: 116\r\n\r\n"
+				+ "message=Hello world!!&mensaje=¡¡Hola mundo!!&mensaxe=Ola mundo!!&mensagem=Olá mundo!!";
+
+		String[] list = url.split("\r\n");
+		;
+
+		for (int i = 1; i < list.length; i++) {
+
+			if (list[i].contains(":")) {
+				m.put(list[i].split(": ")[0], list[i].split(": ")[1]);
+			}
+		}
+
+		return m;
 	}
 
 	public String getContent() {
@@ -152,11 +185,11 @@ public class HTTPRequest {
 
 	public int getContentLength() {
 		// TODO Auto-generated method stub
-		return -1;
+		return 0;
 	}
 
 	@Override
-	public String toString(){
+	public String toString() {
 		final StringBuilder sb = new StringBuilder(this.getMethod().name()).append(' ').append(this.getResourceChain())
 				.append(' ').append(this.getHttpVersion()).append("\r\n");
 
