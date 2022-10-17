@@ -45,7 +45,8 @@ public class HTTPResponse {
 
 	public String getContent() {
 		// TODO Auto-generated method stub
-		return null;
+		String r = "<body>Hybrid Server<\body>";
+		return r;
 	}
 
 	public void setContent(String content) {
