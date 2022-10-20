@@ -18,9 +18,9 @@
 package es.uvigo.esei.dai.hybridserver.http;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -39,10 +39,41 @@ public class HTTPRequest {
 
 			aux = reader.read();
 		}
+		this.url = URLDecoder.decode(this.url, "UTF-8");
+		validRequest();
 	}
 
-	public HTTPRequest(String reader) {
-		url = reader;
+	public HTTPRequest(String reader) throws UnsupportedEncodingException {
+		url = URLDecoder.decode(this.url, "UTF-8");
+	}
+
+	private void validMethod() throws HTTPParseException {
+		if (getMethod() == null)
+			throw new HTTPParseException();
+	}
+
+	private void validRequest() throws HTTPParseException {
+		validMethod();
+		validResource();
+		validVersion();
+		validateHeaders();
+		
+		
+	}
+
+
+	private void validVersion() throws HTTPParseException {
+		if (getHttpVersion() == "")
+			throw new HTTPParseException();
+	}
+		
+
+
+	private void validResource() throws HTTPParseException {
+		if (getResourceChain().charAt(0)=='/')
+			throw new HTTPParseException();
+	
+		
 	}
 
 	public HTTPRequestMethod getMethod() {
@@ -60,15 +91,16 @@ public class HTTPRequest {
 	}
 
 	public String getResourceChain() {
-		// TODO Auto-generated method stub
 
-		String list[] = url.split(" ");
+		String list[];
+
+		list = url.split(" ");
 
 		return list[1];
 	}
 
 	public String[] getResourcePath() {
-		// TODO Auto-generated method stub
+		
 
 		String r = getResourceChain();
 
@@ -77,30 +109,27 @@ public class HTTPRequest {
 		String s = list[0];
 
 		String[] aux = s.split("/");
-		
-		if(aux.length!=0) {
 
-		String[] toRet = new String[aux.length - 1];
+		if (aux.length != 0) {
 
-		for (int i = 1; i < aux.length; i++) {
-			toRet[i - 1] = aux[i];
-		}
-		
-		
+			String[] toRet = new String[aux.length - 1];
 
-		return toRet;
-		
-		} else {
-			
-			String[] toRet = {};
-			
+			for (int i = 1; i < aux.length; i++) {
+				toRet[i - 1] = aux[i];
+			}
+
 			return toRet;
-			
+
+		} else {
+
+			String[] toRet = {};
+
+			return toRet;
+
 		}
 	}
 
 	public String getResourceName() {
-		// TODO Auto-generated method stub
 
 		String s = getResourceChain();
 
@@ -110,35 +139,56 @@ public class HTTPRequest {
 	}
 
 	public Map<String, String> getResourceParameters() {
-		// TODO Auto-generated method stub
-
-		String s = getResourceChain();
 
 		Map<String, String> m = new LinkedHashMap<String, String>();
 
-		if (!s.contains("?")) {
+		switch (getMethod()) {
+		case DELETE:
+		case GET:
+			String chain = getResourceChain();
 
-			return m;
+			if (!chain.contains("?")) {
 
-		}
+				return m;
 
-		String list[] = s.split("\\?");
+			}
 
-		s = list[1];
+			String list[] = chain.split("\\?");
 
-		list = s.split("&");
+			chain = list[1];
 
-		for (int i = 0; i < list.length; i++) {
+			list = chain.split("&");
 
-			m.put(list[i].split("=")[0], list[i].split("=")[1]);
+			for (int i = 0; i < list.length; i++) {
 
+				m.put(list[i].split("=")[0], list[i].split("=")[1]);
+
+			}
+
+			break;
+
+		case POST:
+			String content = getContent();
+
+			String lista[] = content.split("&");
+
+			for (int i = 0; i < lista.length; i++) {
+
+				m.put(lista[i].split("=")[0], lista[i].split("=")[1]);
+
+			}
+
+			break;
+
+		default:
+			break;
 		}
 
 		return m;
+
 	}
 
 	public String getHttpVersion() {
-		// TODO Auto-generated method stub
 
 		String s = url.split(" ")[2];
 
@@ -158,34 +208,57 @@ public class HTTPRequest {
 	}
 
 	public Map<String, String> getHeaderParameters() {
-
 		Map<String, String> m = new LinkedHashMap<String, String>();
 
-		String requestText = "POST / HTTP/1.1\r\n" + "Host: localhost\r\n"
-				+ "Content-Type: application/x-www-form-urlencoded\r\n" + "Content-Length: 116\r\n\r\n"
-				+ "message=Hello world!!&mensaje=¡¡Hola mundo!!&mensaxe=Ola mundo!!&mensagem=Olá mundo!!";
-
 		String[] list = url.split("\r\n");
-		;
-
 		for (int i = 1; i < list.length; i++) {
 
 			if (list[i].contains(":")) {
 				m.put(list[i].split(": ")[0], list[i].split(": ")[1]);
 			}
 		}
-
+		
 		return m;
+		
+	}
+	private void validateHeaders() throws HTTPParseException{
+		Map<String, String> m = new LinkedHashMap<String, String>();
+
+		String[] list = url.split("\r\n");
+		;
+
+		try {
+		for (int i = 1; i < list.length; i++) {
+
+			if (list[i].contains(":")) {
+				m.put(list[i].split(": ")[0], list[i].split(": ")[1]);
+			}
+		}
+		}catch (IndexOutOfBoundsException e) {
+			throw new HTTPParseException();
+		}
 	}
 
 	public String getContent() {
-		// TODO Auto-generated method stub
-		return null;
+		if (getContentLength() == 0) {
+			return null;
+		}
+
+		return url.split("\\r\\n\\r\\n")[1];
+
 	}
 
 	public int getContentLength() {
-		// TODO Auto-generated method stub
-		return 0;
+		try {
+			String contentLenght = getHeaderParameters().get("Content-Length");
+			if (contentLenght != null)
+				return Integer.parseInt(contentLenght);
+			return 0;
+
+		} catch (NullPointerException e) {
+			return 0;
+		}
+
 	}
 
 	@Override
