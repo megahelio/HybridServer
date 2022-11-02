@@ -59,7 +59,6 @@ public class HybridServer {
 								break;
 							ServiceThread thread = new ServiceThread(socket, dao);
 							threadPool.execute(thread);
-							// Responder al cliente
 						}
 					}
 				} catch (IOException e) {
