@@ -43,8 +43,9 @@ public class HTTPRequest {
 		validRequest();
 	}
 
-	public HTTPRequest(String reader) throws UnsupportedEncodingException {
-		url = URLDecoder.decode(this.url, "UTF-8");
+	public HTTPRequest(String reader) throws UnsupportedEncodingException, HTTPParseException {
+		url = URLDecoder.decode(reader, "UTF-8");
+		validRequest();
 	}
 
 	private void validMethod() throws HTTPParseException {
@@ -57,32 +58,24 @@ public class HTTPRequest {
 		validResource();
 		validVersion();
 		validateHeaders();
-		
-		
 	}
-
 
 	private void validVersion() throws HTTPParseException {
 		if (getHttpVersion() == "")
 			throw new HTTPParseException();
 	}
-		
-
 
 	private void validResource() throws HTTPParseException {
-		if (getResourceChain().charAt(0)=='/')
+		if (getResourceChain().charAt(0) != '/')
 			throw new HTTPParseException();
-	
-		
+
 	}
 
 	public HTTPRequestMethod getMethod() {
 
-		String list[] = url.split(" ");
-
 		for (HTTPRequestMethod c : HTTPRequestMethod.values()) {
-			if (c.name().equals(list[0])) {
-				return HTTPRequestMethod.valueOf(list[0]);
+			if (url.contains(c.toString())) {
+				return c;
 			}
 		}
 
@@ -100,7 +93,6 @@ public class HTTPRequest {
 	}
 
 	public String[] getResourcePath() {
-		
 
 		String r = getResourceChain();
 
@@ -143,45 +135,46 @@ public class HTTPRequest {
 		Map<String, String> m = new LinkedHashMap<String, String>();
 
 		switch (getMethod()) {
-		case DELETE:
-		case GET:
-			String chain = getResourceChain();
+			case DELETE:
+			case GET:
+				String chain = getResourceChain();
 
-			if (!chain.contains("?")) {
+				if (!chain.contains("?")) {
 
-				return m;
+					return m;
 
-			}
+				}
 
-			String list[] = chain.split("\\?");
+				String list[] = chain.split("\\?");
 
-			chain = list[1];
+				chain = list[1];
 
-			list = chain.split("&");
+				list = chain.split("&");
 
-			for (int i = 0; i < list.length; i++) {
+				for (int i = 0; i < list.length; i++) {
 
-				m.put(list[i].split("=")[0], list[i].split("=")[1]);
+					m.put(list[i].split("=")[0], list[i].split("=")[1]);
 
-			}
+				}
 
-			break;
+				break;
 
-		case POST:
-			String content = getContent();
+			case POST:
+				String content = getContent();
+				System.out.println("content: " + content);
 
-			String lista[] = content.split("&");
+				String lista[] = content.split("&");
 
-			for (int i = 0; i < lista.length; i++) {
+				for (int i = 0; i < lista.length; i++) {
 
-				m.put(lista[i].split("=")[0], lista[i].split("=")[1]);
+					m.put(lista[i].split("=")[0], lista[i].split("=")[1]);
 
-			}
+				}
 
-			break;
+				break;
 
-		default:
-			break;
+			default:
+				break;
 		}
 
 		return m;
@@ -217,24 +210,26 @@ public class HTTPRequest {
 				m.put(list[i].split(": ")[0], list[i].split(": ")[1]);
 			}
 		}
-		
+
 		return m;
-		
+
 	}
-	private void validateHeaders() throws HTTPParseException{
+
+	private void validateHeaders() throws HTTPParseException {
 		Map<String, String> m = new LinkedHashMap<String, String>();
 
-		String[] list = url.split("\r\n");
-		;
+		String[] list = url.split("\r\n\r\n")[0].split("\r\n");
 
 		try {
-		for (int i = 1; i < list.length; i++) {
+			for (int i = 1; i < list.length; i++) {
 
-			if (list[i].contains(":")) {
-				m.put(list[i].split(": ")[0], list[i].split(": ")[1]);
+				if (list[i].contains(":")) {
+					m.put(list[i].split(": ")[0], list[i].split(": ")[1]);
+				} else {
+					throw new HTTPParseException();
+				}
 			}
-		}
-		}catch (IndexOutOfBoundsException e) {
+		} catch (IndexOutOfBoundsException e) {
 			throw new HTTPParseException();
 		}
 	}
