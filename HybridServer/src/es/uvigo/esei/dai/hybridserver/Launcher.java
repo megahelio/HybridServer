@@ -23,15 +23,6 @@ public class Launcher {
 	public static void main(String[] args) {
 		
 
-		String requestText = "GET /hello/world.html?country=Spain&province=Ourense&city=Ourense HTTP/1.1\r\n" +
-				"Host: localhost\r\n" +
-				"Accept: text/html\r\n" +
-				"Accept-Encoding: gzip,deflate\r\n";
-
-
-		HTTPRequest a = new HTTPRequest(requestText);
-		
-		a.getResourcePath();
 		
 	}
 }
