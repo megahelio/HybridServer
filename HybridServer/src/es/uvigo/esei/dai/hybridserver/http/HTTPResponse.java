@@ -20,67 +20,113 @@ package es.uvigo.esei.dai.hybridserver.http;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class HTTPResponse {
+
+	private HTTPResponseStatus status;
+
+	private String content;
+
+	private String version;
+
+	private LinkedHashMap<String, String> parameters;
+
 	public HTTPResponse() {
+
+		this.parameters = new LinkedHashMap<>();
+
 	}
 
 	public HTTPResponseStatus getStatus() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.status;
 	}
 
 	public void setStatus(HTTPResponseStatus status) {
+		this.status = status;
 	}
 
 	public String getVersion() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.version;
 	}
 
 	public void setVersion(String version) {
+		this.version = version;
 	}
 
 	public String getContent() {
-		// TODO Auto-generated method stub
-		String r = "<body>Hybrid Server<\body>";
-		return r;
+
+		/*
+		 * String r = "<body>Hybrid Server<\body>"; return r
+		 */
+		return this.content;
 	}
 
 	public void setContent(String content) {
+		this.content = content;
 	}
 
 	public Map<String, String> getParameters() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.parameters;
 	}
 
 	public String putParameter(String name, String value) {
-		// TODO Auto-generated method stub
-		return null;
+		this.parameters.put(name, value);
+		return value;
 	}
 
 	public boolean containsParameter(String name) {
-		// TODO Auto-generated method stub
-		return false;
+		return getParameters().containsKey(name);
 	}
 
 	public String removeParameter(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		return getParameters().remove(name);
 	}
 
 	public void clearParameters() {
+		this.parameters.clear();
 	}
 
 	public List<String> listParameters() {
-		// TODO Auto-generated method stub
-		return null;
+
+		List<String> toRet = new ArrayList<>();
+
+		for (String i : getParameters().values()) {
+			toRet.add(i);
+		}
+
+		return toRet;
+
 	}
 
 	public void print(Writer writer) throws IOException {
+
+		writer.append(getVersion() + " " + getStatus().getCode() + " " + getStatus().getStatus() + "\r\n");
+
+		if (getParameters() != null) {
+			
+			getParameters().forEach((clave, valor) -> {
+				try {
+					writer.append(clave + ": " + valor + "\r\n");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			});
+			
+		}
+
+		if (content != null && content.length() > 0) {
+			writer.append("Content-Length: " + content.length() + "\r\n");
+		}
+
+		writer.append("\r\n");
+		if (getContent() != null) {
+			writer.append(getContent());
+		}
+
 	}
 
 	@Override
