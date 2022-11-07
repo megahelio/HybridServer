@@ -24,12 +24,14 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class HybridServer {
 	private static final int SERVICE_PORT = 8888;
 	private Thread serverThread;
 	private boolean stop;
 	private Dao dao;
+	private ExecutorService threadPool;
 
 	public HybridServer() {
 		// TODO Auto-generated constructor stub
@@ -52,7 +54,7 @@ public class HybridServer {
 			@Override
 			public void run() {
 				try (final ServerSocket serverSocket = new ServerSocket(SERVICE_PORT)) {
-					ExecutorService threadPool = Executors.newFixedThreadPool(50);
+					threadPool = Executors.newFixedThreadPool(50);
 					while (true) {
 						try (Socket socket = serverSocket.accept()) {
 							if (stop)
@@ -87,5 +89,13 @@ public class HybridServer {
 		}
 
 		this.serverThread = null;
+
+		threadPool.shutdownNow();
+		try {
+			threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
 	}
 }
