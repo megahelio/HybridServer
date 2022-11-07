@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class DaoMap implements Dao {
 
-    private Map<String, String> mapa;
+    private static Map<String, String> mapa;
 
     public DaoMap(Map<String, String> pages) {
         mapa = new LinkedHashMap<>(pages);
