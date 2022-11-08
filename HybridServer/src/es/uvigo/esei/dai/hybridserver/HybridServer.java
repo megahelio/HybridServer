@@ -18,7 +18,6 @@
 package es.uvigo.esei.dai.hybridserver;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Map;
@@ -26,35 +25,31 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import es.uvigo.esei.dai.hybridserver.http.HTTPParseException;
-import es.uvigo.esei.dai.hybridserver.http.HTTPRequest;
-import es.uvigo.esei.dai.hybridserver.http.HTTPResponse;
-import es.uvigo.esei.dai.hybridserver.http.HTTPResponseStatus;
-
 public class HybridServer {
 	private static final int SERVICE_PORT = 8888;
 	private Thread serverThread;
 	private boolean stop;
 	private Dao dao;
 	private Properties prop;
-	
+
 	public HybridServer() {
-		// TODO Auto-generated constructor stub
 		this.prop = new Properties();
 		this.prop.put("numClients", 50);
 		this.prop.put("port", SERVICE_PORT);
 		this.prop.put("db.url", "jdbc:mysql://localhost:3306/hstestdb");
 		this.prop.put("db.user", "hsdb");
 		this.prop.put("db.password", "hsdbpass");
+
+		this.dao = new DaoMapper();
 	}
 
 	public HybridServer(Map<String, String> pages) {
-		// TODO Auto-generated constructor stub
+		this.dao = new DaoMapper(pages);
 	}
 
 	public HybridServer(Properties properties) {
-		// TODO Auto-generated constructor stub
 		this.prop = properties;
+		this.dao = new DaoMapper();
 	}
 
 	public int getPort() {
@@ -73,7 +68,7 @@ public class HybridServer {
 								break;
 							ServiceThread thread = new ServiceThread(socket, dao);
 							threadPool.execute(thread);
-							
+
 						}
 					}
 				} catch (IOException e) {

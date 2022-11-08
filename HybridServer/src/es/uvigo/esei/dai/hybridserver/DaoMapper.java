@@ -1,42 +1,45 @@
 package es.uvigo.esei.dai.hybridserver;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public class DaoMapper implements Dao {
 
-    @Override
-    public String addPage(String content) {
-        // TODO Auto-generated method stub
-        return null;
+    private static Map<String, String> mapa;
+
+    public DaoMapper(Map<String, String> pages) {
+        mapa = new LinkedHashMap<>(pages);
+    }
+
+    public DaoMapper() {
+        mapa = new LinkedHashMap<>();
     }
 
     @Override
-    public void updatePage(String content) {
-        // TODO Auto-generated method stub
-        
+    public String addPage(String content) {
+        String toret = UUIDgenerator.generate();
+        mapa.put(UUIDgenerator.generate(), content);
+        return toret;
     }
 
     @Override
     public void deletePage(String id) {
-        // TODO Auto-generated method stub
-        
+        mapa.remove(id);
     }
 
     @Override
     public String listPages() {
-        // TODO Auto-generated method stub
-        return null;
+        return mapa.keySet().toString();
     }
 
     @Override
-    public Page get(String id) {
-        // TODO Auto-generated method stub
-        return null;
+    public String get(String id) {
+        return mapa.get(id);
     }
 
     @Override
     public boolean exist(String id) {
-        // TODO Auto-generated method stub
-        return false;
+        return mapa.containsKey(id);
     }
 
-    
 }
