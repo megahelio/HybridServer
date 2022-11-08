@@ -1,6 +1,6 @@
 package es.uvigo.esei.dai.hybridserver;
 
-public class DaoMapper implements Dao {
+public class DaoSQL implements Dao {
 
     @Override
     public String addPage(String content) {
@@ -9,15 +9,9 @@ public class DaoMapper implements Dao {
     }
 
     @Override
-    public void updatePage(String content) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
     public void deletePage(String id) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -27,7 +21,7 @@ public class DaoMapper implements Dao {
     }
 
     @Override
-    public Page get(String id) {
+    public String get(String id) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -38,5 +32,4 @@ public class DaoMapper implements Dao {
         return false;
     }
 
-    
 }

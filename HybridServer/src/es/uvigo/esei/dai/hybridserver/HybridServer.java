@@ -73,18 +73,7 @@ public class HybridServer {
 								break;
 							ServiceThread thread = new ServiceThread(socket, dao);
 							threadPool.execute(thread);
-							InputStreamReader input = new InputStreamReader (socket.getInputStream());
 							
-							HTTPRequest request = new HTTPRequest(input);
-							
-							HTTPResponse response= new HTTPResponse();
-							response.setVersion("HTTP1.1");
-							response.setStatus(HTTPResponseStatus.S200);
-							response.setContent("Hybrid Server");
-
-							response.print(null);
-						} catch (HTTPParseException e) {
-							e.printStackTrace();
 						}
 					}
 				} catch (IOException e) {

@@ -5,6 +5,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.net.Socket;
 
 import es.uvigo.esei.dai.hybridserver.http.HTTPParseException;
@@ -17,18 +21,31 @@ public class ServiceThread implements Runnable {
 	private Socket socket;
 	private Dao dao;
 
-    public ServiceThread(Socket socket, Dao dao) {
-    	
-    	this.socket = socket;
-    	this.dao = dao;
-    	
-    }
-    
+public class ServiceThread implements Runnable {
+    private Socket socket;
+    private Dao dao;
+    private HTTPRequest request;
+    private HTTPResponse response;
 
-    public ServiceThread(Socket socket) {
-    	
-    	this.socket = socket;
-    	
+    /**
+     * @param socket
+     * @param dao
+     */
+    public ServiceThread(Socket socket, Dao dao) {
+        this.socket = socket;
+        this.dao = dao;
+        response = new HTTPResponse();
+
+        try (Reader inputReader = new InputStreamReader(socket.getInputStream())) {
+            try {
+                request = new HTTPRequest(inputReader);
+            } catch (HTTPParseException e) {
+                response.setStatus(HTTPResponseStatus.S400);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -62,8 +79,29 @@ public class ServiceThread implements Runnable {
 			e.printStackTrace();
 		}
 
-	}
-    	
-    }
+        switch (request.getMethod()) {
+            case POST:
+                dao.addPage(request.getContent());
+                break;
+            case GET:
 
+                try (OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream())) {
+                    try {
+                        writer.write(dao.get(request.getHeaderParameters().get("uuid")));
+                    } catch (NullPointerException e) {
+                        writer.write(dao.listPages());
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case DELETE:
+
+                break;
+            default:
+
+                break;
+        }
+
+    }}}
 
