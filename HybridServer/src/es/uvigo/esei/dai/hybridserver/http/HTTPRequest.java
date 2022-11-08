@@ -26,7 +26,17 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 public class HTTPRequest {
-	String url = "";
+	private String url = "";
+
+	private String method;
+	private Map<String,String> headers;
+	private String resourceChain;
+	private String[] resourcePath;
+	private String resourceName;
+	private String resourceParameters;
+	private String version;
+	private String content;
+	private int contentLenght;
 
 	public HTTPRequest(Reader reader) throws IOException, HTTPParseException {
 		System.out.println("HTTPRequest Creator");
