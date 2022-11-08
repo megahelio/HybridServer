@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoMapper;
 
 public class HybridServer {
-	private static final int SERVICE_PORT = 8888;
+	private static final int SERVICE_PORT = 80;
 	private Thread serverThread;
 	private boolean stop;
 	private DaoInterface dao;
@@ -37,6 +37,7 @@ public class HybridServer {
 	private ExecutorService threadPool;
 
 	public HybridServer() {
+		System.out.println("Creando HybridServer");
 		this.prop = new Properties();
 		this.prop.put("numClients", 50);
 		this.prop.put("port", SERVICE_PORT);
@@ -69,17 +70,24 @@ public class HybridServer {
 	}
 
 	public void start() {
+		System.out.println("HybridServer Start");
 		this.serverThread = new Thread() {
 			@Override
 			public void run() {
-				try (final ServerSocket serverSocket = new ServerSocket(Integer.parseInt(prop.getProperty("port")))) {
-					// threadPool = Executors.newFixedThreadPool(50);
-					threadPool = Executors.newFixedThreadPool(Integer.parseInt(prop.getProperty("numClients")));
+				try (final ServerSocket serverSocket = new ServerSocket(SERVICE_PORT)) {
+					// try (final ServerSocket serverSocket = new
+					// ServerSocket(Integer.parseInt(prop.getProperty("port")))) {
+					threadPool = Executors.newFixedThreadPool(50);
+					// threadPool =
+					// Executors.newFixedThreadPool(Integer.parseInt(prop.getProperty("numClients")));
 					while (true) {
+						System.out.println("HybridServer WaitingConnection: "+serverSocket.toString());
 						try (Socket socket = serverSocket.accept()) {
+							System.out.println("HybridServer SocketAccept: "+ socket.toString());
 							if (stop)
 								break;
 							ServiceThread thread = new ServiceThread(socket, dao);
+							System.out.println("HybridServer SocketAccept Execute");
 							threadPool.execute(thread);
 						}
 					}
@@ -94,6 +102,7 @@ public class HybridServer {
 	}
 
 	public void stop() {
+		System.out.println("HybridServer Stop");
 		this.stop = true;
 
 		try (Socket socket = new Socket("localhost", SERVICE_PORT)) {
