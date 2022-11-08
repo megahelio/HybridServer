@@ -34,11 +34,11 @@ public class HybridServer {
 	private ExecutorService threadPool;
 
 	public HybridServer() {
-		dao = new DaoMap();
+		// TODO Auto-generated constructor stub
 	}
 
 	public HybridServer(Map<String, String> pages) {
-		dao = new DaoMap(pages);
+		// TODO Auto-generated constructor stub
 	}
 
 	public HybridServer(Properties properties) {
