@@ -30,6 +30,9 @@ import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoMapper;
 
 public class HybridServer {
 	private static final int SERVICE_PORT = 80;
+
+	private static int count=0;
+
 	private Thread serverThread;
 	private boolean stop;
 	private DaoInterface dao;
@@ -70,7 +73,7 @@ public class HybridServer {
 	}
 
 	public void start() {
-		System.out.println("HybridServer Start");
+		System.out.println("HybridServer.Start");
 		this.serverThread = new Thread() {
 			@Override
 			public void run() {
@@ -81,14 +84,15 @@ public class HybridServer {
 					// threadPool =
 					// Executors.newFixedThreadPool(Integer.parseInt(prop.getProperty("numClients")));
 					while (true) {
-						System.out.println("HybridServer WaitingConnection: "+serverSocket.toString());
+						System.out.println("HybridServer.WaitingConnection "+(++count)+": "+serverSocket.toString());
 						try (Socket socket = serverSocket.accept()) {
-							System.out.println("HybridServer SocketAccept: "+ socket.toString());
+							System.out.println("HybridServer.SocketAccept: "+ socket.toString());
 							if (stop)
 								break;
 							ServiceThread thread = new ServiceThread(socket, dao);
-							System.out.println("HybridServer SocketAccept Execute");
-							threadPool.execute(thread);
+							System.out.println("HybridServer.SocketAccept.Execute");
+							//threadPool.execute(thread);
+							threadPool.submit(thread);
 						}
 					}
 				} catch (IOException e) {

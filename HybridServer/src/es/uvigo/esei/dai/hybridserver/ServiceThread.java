@@ -1,9 +1,9 @@
 package es.uvigo.esei.dai.hybridserver;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.Reader;
 import java.net.Socket;
 
 import es.uvigo.esei.dai.hybridserver.http.HTTPParseException;
@@ -13,26 +13,28 @@ import es.uvigo.esei.dai.hybridserver.http.HTTPResponse;
 import es.uvigo.esei.dai.hybridserver.http.HTTPResponseStatus;
 
 public class ServiceThread implements Runnable {
+    private static int count = 0;
     private Socket socketVar;
     private DaoInterface dao;
     private HTTPRequest request;
     private HTTPResponse response;
 
     public ServiceThread(Socket socketparam, DaoInterface daoparam) {
-        System.out.println("Creando un ServiceThread: "+ socketparam.toString());
+        System.out.println("Creando un ServiceThread " + (++count) + ": " + socketparam.toString());
         this.socketVar = socketparam;
         this.dao = daoparam;
-        response = new HTTPResponse();
     }
 
     @Override
     public void run() {
-        System.out.println("ServiceThread Run: "+ this.socketVar.toString());
+        System.out.println("ServiceThread Run "+count+" : " + this.socketVar.toString());
         try (Socket socket = this.socketVar) {
-            try (Reader inputReader = new InputStreamReader(socketVar.getInputStream())) {
+            System.out.println("ServiceThread Run 1º try" + count + " : " + socket.toString());
+            System.out.println(socket.getInputStream().toString());
+            try (BufferedReader inputReader = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
                 try {
                     // request inicializado presuntamente
-                    request = new HTTPRequest(inputReader);//THROWS HTTPParseException
+                    request = new HTTPRequest(inputReader);// THROWS HTTPParseException
 
                     if (request.getMethod() == HTTPRequestMethod.POST) {
                         System.out.println("POST");
@@ -78,6 +80,7 @@ public class ServiceThread implements Runnable {
                     }
 
                 } catch (HTTPParseException e) {
+                    System.out.println("Throws Parse Exception");
                     response.setStatus(HTTPResponseStatus.S400);
                 }
 
