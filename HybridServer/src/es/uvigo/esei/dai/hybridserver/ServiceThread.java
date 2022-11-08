@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.Writer;
 import java.net.Socket;
 
 import es.uvigo.esei.dai.hybridserver.http.HTTPParseException;
@@ -43,19 +44,10 @@ public class ServiceThread implements Runnable {
 
         switch (request.getMethod()) {
             case POST:
-                dao.addPage(request.getContent());
+
                 break;
             case GET:
 
-                try (OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream())) {
-                    try {
-                        writer.write(dao.get(request.getHeaderParameters().get("uuid")));
-                    } catch (NullPointerException e) {
-                        writer.write(dao.listPages());
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
                 break;
             case DELETE:
 
