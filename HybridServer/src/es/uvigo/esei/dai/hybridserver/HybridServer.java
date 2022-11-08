@@ -85,7 +85,7 @@ public class HybridServer {
 					// Executors.newFixedThreadPool(Integer.parseInt(prop.getProperty("numClients")));
 					while (true) {
 						System.out.println("HybridServer.WaitingConnection "+(++count)+": "+serverSocket.toString());
-						try (Socket socket = serverSocket.accept()) {
+						Socket socket = serverSocket.accept();
 							System.out.println("HybridServer.SocketAccept: "+ socket.toString());
 							if (stop)
 								break;
@@ -93,7 +93,7 @@ public class HybridServer {
 							System.out.println("HybridServer.SocketAccept.Execute");
 							//threadPool.execute(thread);
 							threadPool.submit(thread);
-						}
+						
 					}
 				} catch (IOException e) {
 					e.printStackTrace();

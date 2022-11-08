@@ -26,21 +26,24 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 public class HTTPRequest {
-
 	String url = "";
 
 	public HTTPRequest(Reader reader) throws IOException, HTTPParseException {
+		System.out.println("HTTPRequest Creator");
 
 		int aux = reader.read();
-
-		while (aux != -1) {
+		System.out.print((char) aux);
+		while (reader.ready()) {
 
 			this.url += (char) aux;
 
 			aux = reader.read();
+			System.out.print((char) aux);
 		}
 		this.url = URLDecoder.decode(this.url, "UTF-8");
+		System.out.println("HTTPRequest Creator validation");
 		validRequest();
+		System.out.println("HTTPRequest Creator end");
 	}
 
 	public HTTPRequest(String reader) throws UnsupportedEncodingException, HTTPParseException {
@@ -49,8 +52,12 @@ public class HTTPRequest {
 	}
 
 	private void validMethod() throws HTTPParseException {
-		if (getMethod() == null)
+
+		if (getMethod() == null) {
+			System.out.println("ValidateMethod NO");
 			throw new HTTPParseException();
+		}
+		System.out.println("ValidateMethod YES");
 	}
 
 	private void validRequest() throws HTTPParseException {
@@ -61,24 +68,33 @@ public class HTTPRequest {
 	}
 
 	private void validVersion() throws HTTPParseException {
-		if (getHttpVersion() == "")
+		if (getHttpVersion() == "") {
+			System.out.println("ValidateVersion NO");
 			throw new HTTPParseException();
+		}
+		System.out.println("ValidateVersion YES");
 	}
 
 	private void validResource() throws HTTPParseException {
-		if (getResourceChain().charAt(0) != '/')
+		if (getResourceChain().charAt(0) != '/') {
+			System.out.println("ValidateResource NO");
 			throw new HTTPParseException();
+		}
+		System.out.println("ValidateResource YES");
 
 	}
 
 	public HTTPRequestMethod getMethod() {
+		System.out.println("GetMethod: ");
 
 		for (HTTPRequestMethod c : HTTPRequestMethod.values()) {
+			System.out.println("Cheking: " + c);
 			if (url.contains(c.toString())) {
+				System.out.println("Method: " + c);
 				return c;
 			}
 		}
-
+		System.out.println("NO Method found");
 		return null;
 
 	}
@@ -221,17 +237,21 @@ public class HTTPRequest {
 		String[] list = url.split("\r\n\r\n")[0].split("\r\n");
 
 		try {
-			for (int i = 1; i < list.length; i++) {
-
+			for (int i = 1; i < list.length-1; i++) {
+				System.out.println(list[i] + " Contains : => " + list[i].contains(":"));
 				if (list[i].contains(":")) {
+					System.out.println(list[i].split(": ")[0] + " ---- " + list[i].split(": ")[1]);
 					m.put(list[i].split(": ")[0], list[i].split(": ")[1]);
 				} else {
+					System.out.println("Validate Headers NO");
 					throw new HTTPParseException();
 				}
 			}
 		} catch (IndexOutOfBoundsException e) {
+			System.out.println("Validate Headers NO");
 			throw new HTTPParseException();
 		}
+		System.out.println("Validate Headers YES");
 	}
 
 	public String getContent() {

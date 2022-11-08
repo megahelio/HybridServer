@@ -27,24 +27,26 @@ public class ServiceThread implements Runnable {
 
     @Override
     public void run() {
+        BufferedReader inputReader;
         System.out.println("ServiceThread Run "+count+" : " + this.socketVar.toString());
         try (Socket socket = this.socketVar) {
             System.out.println("ServiceThread Run 1º try" + count + " : " + socket.toString());
-            System.out.println(socket.getInputStream().toString());
-            try (BufferedReader inputReader = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+            //System.out.println(socket.getInputStream().toString());
+            inputReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 try {
                     // request inicializado presuntamente
+                    System.out.println("Input Reader");
                     request = new HTTPRequest(inputReader);// THROWS HTTPParseException
-
+                    System.out.println("Request: "+ request.getMethod());
                     if (request.getMethod() == HTTPRequestMethod.POST) {
-                        System.out.println("POST");
+                        System.out.println("Case POST");
                         // ******************************************** */
                         // CASO POST
 
                         dao.addPage(request.getContent());
 
                     } else if (request.getMethod() == HTTPRequestMethod.GET) {
-                        System.out.println("GET");
+                        System.out.println("Case GET");
                         // ******************************************** */
                         // CASO GET
 
@@ -59,12 +61,12 @@ public class ServiceThread implements Runnable {
                         }
 
                     } else if (request.getMethod() == HTTPRequestMethod.DELETE) {
-                        System.out.println("DELETE");
+                        System.out.println("Case DELETE");
                         // ******************************************** */
                         // CASO DELETE
 
                     } else {
-                        System.out.println("DEFAULT");
+                        System.out.println("Case DEFAULT");
                         // CASO UNIMPLEMENTED METHOD
 
                         try (OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream())) {
@@ -84,12 +86,9 @@ public class ServiceThread implements Runnable {
                     response.setStatus(HTTPResponseStatus.S400);
                 }
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+           
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 }
