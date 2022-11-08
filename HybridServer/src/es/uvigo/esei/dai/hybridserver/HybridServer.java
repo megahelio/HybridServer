@@ -65,22 +65,22 @@ public class HybridServer {
 	}
 
 	public int getPort() {
-		return SERVICE_PORT;
+		return Integer.parseInt(prop.getProperty("port"));
 	}
 
 	public void start() {
 		this.serverThread = new Thread() {
 			@Override
 			public void run() {
-				try (final ServerSocket serverSocket = new ServerSocket(SERVICE_PORT)) {
-					threadPool = Executors.newFixedThreadPool(50);
+				try (final ServerSocket serverSocket = new ServerSocket(Integer.parseInt(prop.getProperty("port")))) {
+					// threadPool = Executors.newFixedThreadPool(50);
+					threadPool = Executors.newFixedThreadPool(Integer.parseInt(prop.getProperty("numClients")));
 					while (true) {
 						try (Socket socket = serverSocket.accept()) {
 							if (stop)
 								break;
 							ServiceThread thread = new ServiceThread(socket, dao);
 							threadPool.execute(thread);
-
 						}
 					}
 				} catch (IOException e) {
