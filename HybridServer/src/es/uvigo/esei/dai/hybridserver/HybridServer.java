@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoMapper;
 
@@ -33,6 +34,7 @@ public class HybridServer {
 	private boolean stop;
 	private DaoInterface dao;
 	private Properties prop;
+	private ExecutorService threadPool;
 
 	public HybridServer() {
 		this.prop = new Properties();
@@ -46,11 +48,19 @@ public class HybridServer {
 	}
 
 	public HybridServer(Map<String, String> pages) {
+		this.prop = new Properties();
+		this.prop.put("numClients", 50);
+		this.prop.put("port", SERVICE_PORT);
+		this.prop.put("db.url", "jdbc:mysql://localhost:3306/hstestdb");
+		this.prop.put("db.user", "hsdb");
+		this.prop.put("db.password", "hsdbpass");
+
 		this.dao = new DaoMapper(pages);
 	}
 
 	public HybridServer(Properties properties) {
 		this.prop = properties;
+
 		this.dao = new DaoMapper();
 	}
 
@@ -63,7 +73,7 @@ public class HybridServer {
 			@Override
 			public void run() {
 				try (final ServerSocket serverSocket = new ServerSocket(SERVICE_PORT)) {
-					ExecutorService threadPool = Executors.newFixedThreadPool(50);
+					threadPool = Executors.newFixedThreadPool(50);
 					while (true) {
 						try (Socket socket = serverSocket.accept()) {
 							if (stop)
@@ -99,5 +109,13 @@ public class HybridServer {
 		}
 
 		this.serverThread = null;
+
+		threadPool.shutdownNow();
+
+		try {
+			threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 }
