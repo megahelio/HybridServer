@@ -1,9 +1,12 @@
-package es.uvigo.esei.dai.hybridserver;
+package es.uvigo.esei.dai.hybridserver.DaoImplementations;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class DaoMapper implements Dao {
+import es.uvigo.esei.dai.hybridserver.DaoInterface;
+import es.uvigo.esei.dai.hybridserver.UUIDgenerator;
+
+public class DaoMapper implements DaoInterface{
 
     private static Map<String, String> mapa;
 

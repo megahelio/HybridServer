@@ -25,11 +25,13 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoMapper;
+
 public class HybridServer {
 	private static final int SERVICE_PORT = 8888;
 	private Thread serverThread;
 	private boolean stop;
-	private Dao dao;
+	private DaoInterface dao;
 	private Properties prop;
 
 	public HybridServer() {

@@ -13,11 +13,11 @@ import es.uvigo.esei.dai.hybridserver.http.HTTPResponseStatus;
 
 public class ServiceThread implements Runnable {
     private Socket socket;
-    private Dao dao;
+    private DaoInterface dao;
     private HTTPRequest request;
     private HTTPResponse response;
 
-    public ServiceThread(Socket socket, Dao dao) {
+    public ServiceThread(Socket socket, DaoInterface dao) {
         this.socket = socket;
         this.dao = dao;
         response = new HTTPResponse();

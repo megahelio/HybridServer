@@ -1,6 +1,6 @@
 package es.uvigo.esei.dai.hybridserver;
 
-public interface Dao {
+public interface DaoInterface {
 
     public String addPage(String content);
 
