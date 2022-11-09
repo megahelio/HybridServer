@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoMapper;
 
 public class HybridServer {
-	private static final int SERVICE_PORT = 80;
+	private static final int SERVICE_PORT = 8888;
 
 	private static int count=0;
 
@@ -42,8 +42,8 @@ public class HybridServer {
 	public HybridServer() {
 		System.out.println("Creando HybridServer");
 		this.prop = new Properties();
-		this.prop.put("numClients", 50);
-		this.prop.put("port", SERVICE_PORT);
+		this.prop.put("numClients", "50");
+		this.prop.put("port", "8888");
 		this.prop.put("db.url", "jdbc:mysql://localhost:3306/hstestdb");
 		this.prop.put("db.user", "hsdb");
 		this.prop.put("db.password", "hsdbpass");
