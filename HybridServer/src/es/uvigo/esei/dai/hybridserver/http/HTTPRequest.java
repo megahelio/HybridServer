@@ -28,12 +28,12 @@ import java.util.regex.Pattern;
 public class HTTPRequest {
 	private String url = "";
 
-	private String method;
+	private HTTPRequestMethod method;
 	private Map<String,String> headers;
 	private String resourceChain;
 	private String[] resourcePath;
 	private String resourceName;
-	private String resourceParameters;
+	private Map<String, String> resourceParameters;
 	private String version;
 	private String content;
 	private int contentLenght;
@@ -53,6 +53,7 @@ public class HTTPRequest {
 		this.url = URLDecoder.decode(this.url, "UTF-8");
 		System.out.println("HTTPRequest Creator validation");
 		validRequest();
+		buildArguments();
 		System.out.println("HTTPRequest Creator end");
 	}
 
@@ -93,8 +94,20 @@ public class HTTPRequest {
 		System.out.println("ValidateResource YES");
 
 	}
+	
+	private void buildArguments(){
+		this.method = getMethodBuild();
+		this.headers = getHeaderParametersBuild();
+		this.resourceChain = getResourceChainBuild();
+		this.resourcePath = getResourcePathBuild();
+		this.resourceName = getResourceNameBuild();
+		this.resourceParameters = getResourceParametersBuild();
+		this.version = getHttpVersionBuild();
+		this.content = getContentBuild();
+		this.contentLenght = getContentLengthBuild();
+	}
 
-	public HTTPRequestMethod getMethod() {
+	private HTTPRequestMethod getMethodBuild() {
 		System.out.println("GetMethod: ");
 
 		for (HTTPRequestMethod c : HTTPRequestMethod.values()) {
@@ -109,7 +122,7 @@ public class HTTPRequest {
 
 	}
 
-	public String getResourceChain() {
+	private String getResourceChainBuild() {
 
 		String list[];
 
@@ -118,7 +131,7 @@ public class HTTPRequest {
 		return list[1];
 	}
 
-	public String[] getResourcePath() {
+	private String[] getResourcePathBuild() {
 
 		String r = getResourceChain();
 
@@ -147,7 +160,7 @@ public class HTTPRequest {
 		}
 	}
 
-	public String getResourceName() {
+	private String getResourceNameBuild() {
 
 		String s = getResourceChain();
 
@@ -156,7 +169,7 @@ public class HTTPRequest {
 		return list[0].substring(1, list[0].length());
 	}
 
-	public Map<String, String> getResourceParameters() {
+	private Map<String, String> getResourceParametersBuild() {
 
 		Map<String, String> m = new LinkedHashMap<String, String>();
 
@@ -207,7 +220,7 @@ public class HTTPRequest {
 
 	}
 
-	public String getHttpVersion() {
+	private String getHttpVersionBuild() {
 
 		String s = url.split(" ")[2];
 
@@ -226,7 +239,7 @@ public class HTTPRequest {
 		return "";
 	}
 
-	public Map<String, String> getHeaderParameters() {
+	private Map<String, String> getHeaderParametersBuild() {
 		Map<String, String> m = new LinkedHashMap<String, String>();
 
 		String[] list = url.split("\r\n");
@@ -264,7 +277,7 @@ public class HTTPRequest {
 		System.out.println("Validate Headers YES");
 	}
 
-	public String getContent() {
+	private String getContentBuild() {
 		if (getContentLength() == 0) {
 			return null;
 		}
@@ -273,7 +286,7 @@ public class HTTPRequest {
 
 	}
 
-	public int getContentLength() {
+	private int getContentLengthBuild() {
 		try {
 			String contentLenght = getHeaderParameters().get("Content-Length");
 			if (contentLenght != null)
@@ -284,6 +297,46 @@ public class HTTPRequest {
 			return 0;
 		}
 
+	}
+	
+	public String getUrl() {
+		return url;
+	}
+
+	public HTTPRequestMethod getMethod() {
+		return this.method;
+	}
+
+	public String getResourceChain() {
+		return this.resourceChain;
+	}
+
+	public String[] getResourcePath() {
+		return this.resourcePath;
+	}
+
+	public String getResourceName() {
+		return this.resourceName;
+	}
+
+	public Map<String, String> getResourceParameters() {
+		return this.resourceParameters;
+	}
+
+	public String getHttpVersion() {
+		return this.version;
+	}
+
+	public Map<String, String> getHeaderParameters() {
+		return this.headers;
+	}
+
+	public String getContent() {
+		return this.content;
+	}
+
+	public int getContentLength() {
+		return this.contentLenght;
 	}
 
 	@Override
