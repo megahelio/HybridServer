@@ -90,6 +90,7 @@ public class HybridServer {
 							if (stop)
 								break;
 							ServiceThread thread = new ServiceThread(socket, dao);
+							//ServiceThreadTester thread = new ServiceThreadTester(socket, dao);
 							System.out.println("HybridServer.SocketAccept.Execute");
 							//threadPool.execute(thread);
 							threadPool.submit(thread);

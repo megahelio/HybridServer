@@ -1,9 +1,12 @@
 package es.uvigo.esei.dai.hybridserver;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.Socket;
 
 import es.uvigo.esei.dai.hybridserver.http.HTTPParseException;
@@ -23,71 +26,86 @@ public class ServiceThread implements Runnable {
         System.out.println("Creando un ServiceThread " + (++count) + ": " + socketparam.toString());
         this.socketVar = socketparam;
         this.dao = daoparam;
+        this.response = new HTTPResponse();
     }
 
     @Override
     public void run() {
         BufferedReader inputReader;
-        System.out.println("ServiceThread Run "+count+" : " + this.socketVar.toString());
+        System.out.println("ServiceThread Run " + count + " : " + this.socketVar.toString());
         try (Socket socket = this.socketVar) {
-            System.out.println("ServiceThread Run 1º try" + count + " : " + socket.toString());
-            //System.out.println(socket.getInputStream().toString());
+
+            System.out.println("ServiceThread Run" + count + " : " +
+                    socket.toString());
+            // System.out.println(socket.getInputStream().toString());
             inputReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                try {
-                    // request inicializado presuntamente
-                    System.out.println("Input Reader");
-                    request = new HTTPRequest(inputReader);// THROWS HTTPParseException
-                    System.out.println("Request: "+ request.getMethod());
-                    if (request.getMethod() == HTTPRequestMethod.POST) {
-                        System.out.println("Case POST");
-                        // ******************************************** */
-                        // CASO POST
 
-                        dao.addPage(request.getContent());
+            try {
+                // request inicializado presuntamente
+                System.out.println("Input Reader");
+                request = new HTTPRequest(inputReader);// THROWS HTTPParseException
+                System.out.println("Request: " + request.getMethod());
 
-                    } else if (request.getMethod() == HTTPRequestMethod.GET) {
-                        System.out.println("Case GET");
-                        // ******************************************** */
-                        // CASO GET
+                if (request.getMethod() == HTTPRequestMethod.POST) {
+                    System.out.println("Case POST");
+                    // ******************************************** */
+                    // CASO POST
 
-                        try (OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream())) {
-                            try {
-                                writer.write(dao.get(request.getHeaderParameters().get("uuid")));
-                            } catch (NullPointerException e) {
-                                writer.write(dao.listPages());
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                    // añadimos la pagina al dao
+                    dao.addPage(request.getContent());
+                    // Preparamos un 200 OK para la respuesta
+                    response.setStatus(HTTPResponseStatus.S200);
 
-                    } else if (request.getMethod() == HTTPRequestMethod.DELETE) {
-                        System.out.println("Case DELETE");
-                        // ******************************************** */
-                        // CASO DELETE
+                } else if (request.getMethod() == HTTPRequestMethod.GET) {
+                    System.out.println("Case GET");
+                    // ******************************************** */
+                    // CASO GET
 
-                    } else {
-                        System.out.println("Case DEFAULT");
-                        // CASO UNIMPLEMENTED METHOD
+                    // Buscamos mediante el dao la pagina que solicita el GET
+                    try {
+                        response.setContent(dao.get(request.getHeaderParameters().get("uuid")));
+                        response.setStatus(HTTPResponseStatus.S200);
+                    } catch (NullPointerException e) {
+                        // En el caso de que la página que se busca no exista
 
-                        try (OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream())) {
-                            try {
-                                writer.write("Hybrid Server");
-                            } catch (NullPointerException e) {
-                                writer.write(dao.listPages());
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
+                        // Preparamos como contenido la lista de páginas disponibles
+                        response.setContent(dao.listPages());
+                        response.setStatus(HTTPResponseStatus.S404);
                     }
 
-                } catch (HTTPParseException e) {
-                    System.out.println("Throws Parse Exception");
-                    response.setStatus(HTTPResponseStatus.S400);
+                } else if (request.getMethod() == HTTPRequestMethod.DELETE) {
+                    System.out.println("Case DELETE");
+                    // ******************************************** */
+                    // CASO DELETE
+                    // Buscamos mediante el dao la pagina que solicita el GET para borrarla
+                    try {
+                        dao.deletePage(request.getHeaderParameters().get("uuid"));
+                        response.setStatus(HTTPResponseStatus.S200);
+                    } catch (NullPointerException e) {
+                        // En el caso de que la página que se busca no exista
+
+                        // Preparamos como contenido la lista de páginas disponibles
+                        response.setContent(dao.listPages());
+                        response.setStatus(HTTPResponseStatus.S404);
+                    }
+                } else {
+                    System.out.println("Case DEFAULT");
+                    // CASO UNIMPLEMENTED METHOD
+                    response.setStatus(HTTPResponseStatus.S501);
                 }
 
-           
-        } catch (IOException e) {
+            } catch (HTTPParseException e) {
+                System.out.println("Throws Parse Exception");
+
+                response.setStatus(HTTPResponseStatus.S400);
+            } finally {
+                socket.getOutputStream().write(response.toString().getBytes(), 0,
+                        response.toString().getBytes().length);
+            }
+
+        } catch (
+
+        IOException e) {
             e.printStackTrace();
         }
     }

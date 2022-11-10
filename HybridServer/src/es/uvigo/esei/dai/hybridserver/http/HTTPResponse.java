@@ -35,9 +35,16 @@ public class HTTPResponse {
 
 	private LinkedHashMap<String, String> parameters;
 
+	/**
+	 * create a new HTTPResponse objet
+	 * 
+	 * @version default value HTTP/1.1
+	 */
 	public HTTPResponse() {
 
 		this.parameters = new LinkedHashMap<>();
+		this.parameters.put("EstaAplicacionEs", "HybridServer");
+		this.version = "HTTP/1.1";
 
 	}
 
@@ -53,6 +60,10 @@ public class HTTPResponse {
 		return this.version;
 	}
 
+	/**
+	 * 
+	 * @param version = HTTP/1.1 default value;
+	 */
 	public void setVersion(String version) {
 		this.version = version;
 	}
@@ -103,11 +114,8 @@ public class HTTPResponse {
 	}
 
 	public void print(Writer writer) throws IOException {
-
 		writer.append(getVersion() + " " + getStatus().getCode() + " " + getStatus().getStatus() + "\r\n");
-
 		if (getParameters() != null) {
-			
 			getParameters().forEach((clave, valor) -> {
 				try {
 					writer.append(clave + ": " + valor + "\r\n");
@@ -115,7 +123,7 @@ public class HTTPResponse {
 					e.printStackTrace();
 				}
 			});
-			
+
 		}
 
 		if (content != null && content.length() > 0) {
@@ -136,6 +144,7 @@ public class HTTPResponse {
 		try {
 			this.print(writer);
 		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
 		return writer.toString();
