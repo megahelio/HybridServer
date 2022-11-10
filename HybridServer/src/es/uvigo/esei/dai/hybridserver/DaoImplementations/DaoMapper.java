@@ -6,7 +6,7 @@ import java.util.Map;
 import es.uvigo.esei.dai.hybridserver.DaoInterface;
 import es.uvigo.esei.dai.hybridserver.UUIDgenerator;
 
-public class DaoMapper implements DaoInterface{
+public class DaoMapper implements DaoInterface {
 
     private static Map<String, String> mapa;
 
@@ -24,6 +24,7 @@ public class DaoMapper implements DaoInterface{
     public String addPage(String content) {
         System.out.println("DaoMapper Addpage Start");
         String toret = UUIDgenerator.generate();
+        System.out.println(content);
         mapa.put(UUIDgenerator.generate(), content);
         System.out.println("DaoMapper Addpage End");
         return toret;
@@ -36,6 +37,7 @@ public class DaoMapper implements DaoInterface{
 
     @Override
     public String listPages() {
+        System.out.println(mapa.keySet().toString());
         return mapa.keySet().toString();
     }
 

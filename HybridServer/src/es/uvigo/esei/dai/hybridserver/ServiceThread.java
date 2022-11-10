@@ -1,12 +1,8 @@
 package es.uvigo.esei.dai.hybridserver;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.net.Socket;
 
 import es.uvigo.esei.dai.hybridserver.http.HTTPParseException;
@@ -39,10 +35,10 @@ public class ServiceThread implements Runnable {
                     socket.toString());
             // System.out.println(socket.getInputStream().toString());
             inputReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            // request inicializado presuntamente
+            System.out.println("Input Reader");
 
             try {
-                // request inicializado presuntamente
-                System.out.println("Input Reader");
                 request = new HTTPRequest(inputReader);// THROWS HTTPParseException
                 System.out.println("Request: " + request.getMethod());
 
@@ -63,12 +59,18 @@ public class ServiceThread implements Runnable {
 
                     // Buscamos mediante el dao la pagina que solicita el GET
                     try {
-                        response.setContent(dao.get(request.getHeaderParameters().get("uuid")));
-                        response.setStatus(HTTPResponseStatus.S200);
+                        System.out.println("try");
+                        if (request.getHeaderParameters().containsKey("uuid")) {
+                            response.setContent(dao.get(request.getHeaderParameters().get("uuid")));
+                            response.setStatus(HTTPResponseStatus.S200);
+                        } else {
+                            throw new NullPointerException();
+                        }
                     } catch (NullPointerException e) {
                         // En el caso de que la página que se busca no exista
 
                         // Preparamos como contenido la lista de páginas disponibles
+                        System.out.println("catch");
                         response.setContent(dao.listPages());
                         response.setStatus(HTTPResponseStatus.S404);
                     }
