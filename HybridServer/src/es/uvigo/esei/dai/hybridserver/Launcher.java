@@ -1,18 +1,19 @@
 package es.uvigo.esei.dai.hybridserver;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Properties;
 
-//import java.util.Scanner;
 
 public class Launcher {
 
 	public static void main(String[] args) {
-		Map<String, String> pages = new LinkedHashMap<>();
-		pages.put("1", "Página número 1");
-		pages.put("2", "Página número 2");
-		pages.put("3", "Página número 3");
-		HybridServer server = new HybridServer(pages);
+		Properties properties = new Properties();
+		properties.put("numClients", "50");
+		properties.put("port", "8888");
+		properties.put("db.url", "jdbc:mysql://localhost:3306/hstestdb");
+		properties.put("db.user", "hsdb");
+		properties.put("db.password", "hsdbpass");
+
+		HybridServer server = new HybridServer(properties);
 		server.start();
 
 		// Para parar el servidor

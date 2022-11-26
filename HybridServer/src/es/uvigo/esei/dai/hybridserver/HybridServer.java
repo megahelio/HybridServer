@@ -26,12 +26,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoMapper;
+import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoSQL;
 
 public class HybridServer {
 	private static final int SERVICE_PORT = 8888;
 
-	private static int count=0;
+	private static int count = 0;
 
 	private Thread serverThread;
 	private boolean stop;
@@ -48,7 +48,9 @@ public class HybridServer {
 		this.prop.put("db.user", "hsdb");
 		this.prop.put("db.password", "hsdbpass");
 
-		this.dao = new DaoMapper();
+		this.dao = new DaoSQL(this.prop.getProperty("db.url"), this.prop.getProperty("db.user"),
+				this.prop.getProperty("db.password"));
+		// this.dao = new DaoMapper();
 	}
 
 	public HybridServer(Map<String, String> pages) {
@@ -59,13 +61,16 @@ public class HybridServer {
 		this.prop.put("db.user", "hsdb");
 		this.prop.put("db.password", "hsdbpass");
 
-		this.dao = new DaoMapper(pages);
+		this.dao = new DaoSQL(this.prop.getProperty("db.url"), this.prop.getProperty("db.user"),
+				this.prop.getProperty("db.password"));
 	}
 
 	public HybridServer(Properties properties) {
 		this.prop = properties;
 
-		this.dao = new DaoMapper();
+		// this.dao = new DaoMapper();
+		this.dao = new DaoSQL(this.prop.getProperty("db.url"), this.prop.getProperty("db.user"),
+				this.prop.getProperty("db.password"));
 	}
 
 	public int getPort() {
@@ -84,17 +89,18 @@ public class HybridServer {
 					// threadPool =
 					// Executors.newFixedThreadPool(Integer.parseInt(prop.getProperty("numClients")));
 					while (true) {
-						System.out.println("HybridServer.WaitingConnection "+(++count)+": "+serverSocket.toString());
+						System.out.println(
+								"HybridServer.WaitingConnection " + (++count) + ": " + serverSocket.toString());
 						Socket socket = serverSocket.accept();
-							System.out.println("HybridServer.SocketAccept: "+ socket.toString());
-							if (stop)
-								break;
-							ServiceThread thread = new ServiceThread(socket, dao);
-							//ServiceThreadTester thread = new ServiceThreadTester(socket, dao);
-							System.out.println("HybridServer.SocketAccept.Execute");
-							//threadPool.execute(thread);
-							threadPool.submit(thread);
-						
+						System.out.println("HybridServer.SocketAccept: " + socket.toString());
+						if (stop)
+							break;
+						ServiceThread thread = new ServiceThread(socket, dao);
+						// ServiceThreadTester thread = new ServiceThreadTester(socket, dao);
+						System.out.println("HybridServer.SocketAccept.Execute");
+						// threadPool.execute(thread);
+						threadPool.submit(thread);
+
 					}
 				} catch (IOException e) {
 					e.printStackTrace();

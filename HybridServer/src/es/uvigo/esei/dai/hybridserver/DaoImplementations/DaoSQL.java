@@ -1,6 +1,7 @@
 package es.uvigo.esei.dai.hybridserver.DaoImplementations;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,15 +14,29 @@ import es.uvigo.esei.dai.hybridserver.UUIDgenerator;
 
 public class DaoSQL implements DaoInterface {
 
-	private final Connection connection;
+	private String url;
+	private String user;
+	private String password;
 
-	public DaoSQL(Connection connection) {
-		this.connection = connection;
+	/**
+	 * @param url
+	 * @param user
+	 * @param password
+	 */
+	public DaoSQL(String url, String user, String password) {
+		this.url = url;
+		this.user = user;
+		this.password = password;
+	}
+
+	private Connection getConnection() throws SQLException {
+		return DriverManager.getConnection(this.url, this.user, this.password);
+
 	}
 
 	@Override
 	public String addPage(String content) {
-		try (PreparedStatement statement = this.connection
+		try (PreparedStatement statement = getConnection()
 				.prepareStatement("INSERT INTO HTML (uuid, content) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS)) {
 			statement.setString(1, UUIDgenerator.generate());
 			statement.setString(2, content);
@@ -39,7 +54,7 @@ public class DaoSQL implements DaoInterface {
 	@Override
 	public void deletePage(String id) {
 
-		try (PreparedStatement statement = this.connection.prepareStatement("DELETE FROM html WHERE uuid=?")) {
+		try (PreparedStatement statement = getConnection().prepareStatement("DELETE FROM html WHERE uuid=?")) {
 			statement.setString(1, id);
 
 			if (statement.executeUpdate() != 1)
@@ -52,7 +67,7 @@ public class DaoSQL implements DaoInterface {
 
 	@Override
 	public String listPages() {
-		try (Statement statement = this.connection.createStatement()) {
+		try (Statement statement = getConnection().createStatement()) {
 			try (ResultSet result = statement.executeQuery("SELECT * FROM html")) {
 				final List<String> html = new ArrayList<>();
 
@@ -75,7 +90,7 @@ public class DaoSQL implements DaoInterface {
 
 	@Override
 	public String get(String id) {
-		try (PreparedStatement statement = this.connection.prepareStatement("SELECT * FROM html WHERE uuid=?")) {
+		try (PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM html WHERE uuid=?")) {
 			statement.setString(1, id);
 
 			try (ResultSet result = statement.executeQuery()) {
@@ -91,7 +106,7 @@ public class DaoSQL implements DaoInterface {
 
 	@Override
 	public boolean exist(String id) {
-		try (PreparedStatement statement = this.connection.prepareStatement("SELECT FROM html WHERE uuid=?")) {
+		try (PreparedStatement statement = getConnection().prepareStatement("SELECT FROM html WHERE uuid=?")) {
 			statement.setString(1, id);
 
 			if (statement.executeUpdate() != 1)
