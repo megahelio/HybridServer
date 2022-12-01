@@ -58,12 +58,17 @@ public class ServiceThread implements Runnable {
                     // CASO GET
 
                     // Buscamos mediante el dao la pagina que solicita el GET
+                    if( request.getResourceChain().equals("/") && !request.getHeaderParameters().containsKey("uuid")) {
+                    	response.setContent("Hybrid Server");
+                    	response.setStatus(HTTPResponseStatus.S200);
+                    }
+                    
                     try {
                         System.out.println("try");
                         if (request.getHeaderParameters().containsKey("uuid")) {
                             response.setContent(dao.get(request.getHeaderParameters().get("uuid")));
                             response.setStatus(HTTPResponseStatus.S200);
-                        } else {
+                        } else if(false){
                             throw new NullPointerException();
                         }
                     } catch (NullPointerException e) {

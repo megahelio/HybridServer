@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoSQL;
 
 public class HybridServer {
-	private static final int SERVICE_PORT = 8888;
+	private static final String SERVICE_PORT = "8888";
 
 	private static int count = 0;
 
@@ -55,7 +55,7 @@ public class HybridServer {
 
 	public HybridServer(Map<String, String> pages) {
 		this.prop = new Properties();
-		this.prop.put("numClients", 50);
+		this.prop.put("numClients", "50");
 		this.prop.put("port", SERVICE_PORT);
 		this.prop.put("db.url", "jdbc:mysql://localhost:3306/hstestdb");
 		this.prop.put("db.user", "hsdb");
@@ -67,6 +67,9 @@ public class HybridServer {
 
 	public HybridServer(Properties properties) {
 		this.prop = properties;
+		if(!this.prop.containsKey("port")) {
+			this.prop.put("port", SERVICE_PORT);
+		}
 
 		// this.dao = new DaoMapper();
 		this.dao = new DaoSQL(this.prop.getProperty("db.url"), this.prop.getProperty("db.user"),
@@ -74,7 +77,7 @@ public class HybridServer {
 	}
 
 	public int getPort() {
-		return Integer.parseInt(prop.getProperty("port"));
+		return Integer.parseInt(this.prop.getProperty("port"));
 	}
 
 	public void start() {
@@ -82,22 +85,28 @@ public class HybridServer {
 		this.serverThread = new Thread() {
 			@Override
 			public void run() {
-				try (final ServerSocket serverSocket = new ServerSocket(SERVICE_PORT)) {
+				try (final ServerSocket serverSocket = new ServerSocket(Integer.parseInt(SERVICE_PORT))) {
 					// try (final ServerSocket serverSocket = new
 					// ServerSocket(Integer.parseInt(prop.getProperty("port")))) {
 					threadPool = Executors.newFixedThreadPool(50);
 					// threadPool =
 					// Executors.newFixedThreadPool(Integer.parseInt(prop.getProperty("numClients")));
 					while (true) {
+						
 						System.out.println(
 								"HybridServer.WaitingConnection " + (++count) + ": " + serverSocket.toString());
+						
 						Socket socket = serverSocket.accept();
+						
 						System.out.println("HybridServer.SocketAccept: " + socket.toString());
+						
 						if (stop)
 							break;
 						ServiceThread thread = new ServiceThread(socket, dao);
 						// ServiceThreadTester thread = new ServiceThreadTester(socket, dao);
+						
 						System.out.println("HybridServer.SocketAccept.Execute");
+						
 						// threadPool.execute(thread);
 						threadPool.submit(thread);
 
@@ -116,7 +125,7 @@ public class HybridServer {
 		System.out.println("HybridServer Stop");
 		this.stop = true;
 
-		try (Socket socket = new Socket("localhost", SERVICE_PORT)) {
+		try (Socket socket = new Socket("localhost",Integer.parseInt(SERVICE_PORT))) {
 			// Esta conexión se hace, simplemente, para "despertar" el hilo servidor
 		} catch (IOException e) {
 			throw new RuntimeException(e);
