@@ -3,6 +3,8 @@ package es.uvigo.esei.dai.hybridserver.http;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -26,11 +28,11 @@ public class HTTPRequest {
 	 */
 	public HTTPRequest(Reader readerParam) throws IOException, HTTPParseException {
 		System.out.println("HTTPRequest Creator");
-		// this.url = URLDecoder.decode(this.url, "UTF-8"); No implementado
+		// this.url = URLDecoder.decode(this.url, "UTF-8");
 		BufferedReader readerBuff = new BufferedReader(readerParam);
 
 		// leemos primera linea
-		String[] firstLine = readerBuff.readLine().split(" ");
+		String[] firstLine =  URLDecoder.decode(readerBuff.readLine(), StandardCharsets.UTF_8).split(" ");
 		System.out.println("firstLine: ");
 		for (String seccion : firstLine) {
 			System.out.println(seccion);
@@ -61,39 +63,61 @@ public class HTTPRequest {
 			throw new HTTPParseException("La ruta no es válida");
 		}
 		this.resourceChain = firstLine[1];
-		this.resourcePath = new String[1];
+		String dummyResourcePath[] = new String[1];
 		if (firstLine[1] != "/" && firstLine[1].length() != 1) {
-
 			System.out.println("flag: " + firstLine[1].length());
 			String[] resourceChainSplited = this.resourceChain.split("/");
-			this.resourcePath = new String[resourceChainSplited.length - 1];
-			for (int i = 1; i < resourceChainSplited.length; i++) {
-				/*
-				 * System.out.println(i + " " + resourceChainSplited[i] + " " +
-				 * resourceChainSplited.length + " "
-				 * + this.resourcePath.length);
-				 */
+			System.out.println(resourceChainSplited.length);
+			for (int i = 0; i < resourceChainSplited.length; i++) {
+				System.out.println(resourceChainSplited[i]);
+			}
+			dummyResourcePath = new String[resourceChainSplited.length - 1];
+			for (int i = 1; i < resourceChainSplited.length - 1; i++) {
 
-				this.resourcePath[i - 1] = resourceChainSplited[i];
+				System.out.println(i + " " + resourceChainSplited[i] + " " + resourceChainSplited.length + " "
+						+ dummyResourcePath.length);
+
+				dummyResourcePath[i - 1] = resourceChainSplited[i];
 				/*
 				 * System.out.println("salmethod " + this.resourcePath.length + " " +
 				 * this.resourcePath[i-1]);
 				 */
 			}
+			dummyResourcePath[dummyResourcePath.length - 1] = resourceChainSplited[resourceChainSplited.length - 1]
+					.split("\\?")[0];
+			for (int i = 0; i < dummyResourcePath.length; i++) {
+				System.out.println(dummyResourcePath[i]);
+			}
+			this.resourcePath = dummyResourcePath;
 
 		} else {
 			System.out.println("flag2: " + firstLine[1].length());
-			this.resourcePath[0] = firstLine[1];
+			// El test me pide un array vacio cuando me pasan /
+			String foo[] = {};
+			this.resourcePath = foo;
 		}
+
 		System.out.println("ResouceChain: " + getResourceChain());
 		System.out.println("ResourcePath: ");
 		for (String seccion : getResourcePath()) {
 			System.out.println(seccion);
 
 		}
-		// No sé lo que es resourceName
-		// this.resourceName = aux[1].split("/")[aux[1].split("/").length - 1];
+		// ResourceName
+		if (this.resourceChain.contains("?")) {
+			this.resourceName = this.resourceChain.split("\\?")[0].substring(1,
+					this.resourceChain.split("\\?")[0].length());
+		} else {
+			this.resourceName = this.resourceChain.substring(1, this.resourceChain.length());
+		}
 
+		// ResourceParameters
+		this.resourceParameters = new LinkedHashMap<>();
+		if (getMethod() == HTTPRequestMethod.GET && this.resourceChain.contains("?")) {
+			for (String parametro : this.resourceChain.split("\\?")[1].split("&")) {
+				this.resourceParameters.put(parametro.split("=")[0], parametro.split("=")[1]);
+			}
+		}
 		// Buscamos la versión
 		if (firstLine[2].equals("HTTP/1.1") || firstLine[2].equals("HTTP/0.9") || firstLine[2].equals("HTTP/1.0")) {
 			this.version = firstLine[2];
@@ -105,7 +129,7 @@ public class HTTPRequest {
 		String aHeader;
 		String[] aSplitedHeader = new String[2];
 		this.headers = new LinkedHashMap<>();
-		aHeader = readerBuff.readLine();
+		aHeader = URLDecoder.decode(readerBuff.readLine(), StandardCharsets.UTF_8);
 		System.out.println(aHeader);
 		while (aHeader.length() != 0) {
 			System.out.println("aHeader: " + aHeader.length());
@@ -122,7 +146,7 @@ public class HTTPRequest {
 			} else {
 				throw new HTTPParseException("Cabecera Inválida (Alguna cabecera no contiene :)");
 			}
-			aHeader = readerBuff.readLine();
+			aHeader = URLDecoder.decode(readerBuff.readLine(), StandardCharsets.UTF_8);
 		}
 
 		// Sección Contenido
@@ -136,8 +160,18 @@ public class HTTPRequest {
 				this.content = this.content.concat(Character.toString(character));
 				// System.out.print(Character.toString(character));
 			}
+			this.content =  URLDecoder.decode(this.content, StandardCharsets.UTF_8);
 			System.out.println("Content: \n" + this.content.toString());
 		}
+
+		// ResourceParameters POST
+		if (getMethod() == HTTPRequestMethod.POST && !this.content.equals("")) {
+			for (String parametro : content.split("&")) {
+				this.resourceParameters.put(parametro.split("=")[0], parametro.split("=")[1]);
+			}
+
+		}
+
 		System.out.println("Final contructor");
 
 	}

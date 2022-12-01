@@ -43,7 +43,6 @@ public class HTTPResponse {
 	public HTTPResponse() {
 
 		this.parameters = new LinkedHashMap<>();
-		this.parameters.put("EstaAplicacionEs", "HybridServer");
 		this.version = "HTTP/1.1";
 
 	}
