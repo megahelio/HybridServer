@@ -125,7 +125,7 @@ public class HybridServer {
 		System.out.println("HybridServer Stop");
 		this.stop = true;
 
-		try (Socket socket = new Socket("localhost",Integer.parseInt(SERVICE_PORT))) {
+		try (Socket socket = new Socket("localhost",getPort())) {
 			// Esta conexión se hace, simplemente, para "despertar" el hilo servidor
 		} catch (IOException e) {
 			throw new RuntimeException(e);
