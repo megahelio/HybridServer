@@ -85,7 +85,7 @@ public class HybridServer {
 		this.serverThread = new Thread() {
 			@Override
 			public void run() {
-				try (final ServerSocket serverSocket = new ServerSocket(Integer.parseInt(SERVICE_PORT))) {
+				try (final ServerSocket serverSocket = new ServerSocket(getPort())) {
 					// try (final ServerSocket serverSocket = new
 					// ServerSocket(Integer.parseInt(prop.getProperty("port")))) {
 					threadPool = Executors.newFixedThreadPool(50);

@@ -46,29 +46,28 @@ public class ServiceThread implements Runnable {
                     System.out.println("Case POST");
                     // ******************************************** */
                     // CASO POST
-
                     // añadimos la pagina al dao
-                    dao.addPage(request.getContent());
-                    // Preparamos un 200 OK para la respuesta
+                    String nuevaPaginaUuid = dao.addPage(request.getContent());
+
+                    response.setContent("<a href=\"html?uuid=" + nuevaPaginaUuid + "\">" + nuevaPaginaUuid + "</a>");
                     response.setStatus(HTTPResponseStatus.S200);
 
                 } else if (request.getMethod() == HTTPRequestMethod.GET) {
                     System.out.println("Case GET");
-                    // ******************************************** */
-                    // CASO GET
+                   // CASO GET
 
                     // Buscamos mediante el dao la pagina que solicita el GET
-                    if( request.getResourceChain().equals("/") && !request.getHeaderParameters().containsKey("uuid")) {
-                    	response.setContent("Hybrid Server");
-                    	response.setStatus(HTTPResponseStatus.S200);
+                    if (request.getResourceChain().equals("/") && !request.getHeaderParameters().containsKey("uuid")) {
+                        response.setContent("Hybrid Server");
+                        response.setStatus(HTTPResponseStatus.S200);
                     }
-                    
+
                     try {
                         System.out.println("try");
                         if (request.getHeaderParameters().containsKey("uuid")) {
                             response.setContent(dao.get(request.getHeaderParameters().get("uuid")));
                             response.setStatus(HTTPResponseStatus.S200);
-                        } else if(false){
+                        } else {
                             throw new NullPointerException();
                         }
                     } catch (NullPointerException e) {
@@ -77,7 +76,7 @@ public class ServiceThread implements Runnable {
                         // Preparamos como contenido la lista de páginas disponibles
                         System.out.println("catch");
                         response.setContent(dao.listPages());
-                        response.setStatus(HTTPResponseStatus.S404);
+                        response.setStatus(HTTPResponseStatus.S200);
                     }
 
                 } else if (request.getMethod() == HTTPRequestMethod.DELETE) {

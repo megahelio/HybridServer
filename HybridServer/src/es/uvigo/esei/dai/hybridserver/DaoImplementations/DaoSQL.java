@@ -36,9 +36,10 @@ public class DaoSQL implements DaoInterface {
 
 	@Override
 	public String addPage(String content) {
+		String uuid = UUIDgenerator.generate();
 		try (PreparedStatement statement = getConnection()
 				.prepareStatement("INSERT INTO HTML (uuid, content) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS)) {
-			statement.setString(1, UUIDgenerator.generate());
+			statement.setString(1, uuid);
 			statement.setString(2, content);
 
 			if (statement.executeUpdate() != 1)
@@ -48,7 +49,7 @@ public class DaoSQL implements DaoInterface {
 			throw new RuntimeException(e);
 		}
 
-		return "Insertado correctamente";
+		return uuid;
 	}
 
 	@Override

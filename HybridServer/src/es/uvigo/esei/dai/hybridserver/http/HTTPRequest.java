@@ -33,10 +33,11 @@ public class HTTPRequest {
 
 		// leemos primera linea
 		String[] firstLine =  URLDecoder.decode(readerBuff.readLine(), StandardCharsets.UTF_8).split(" ");
-		System.out.println("firstLine: ");
+		System.out.print("firstLine: ");
 		for (String seccion : firstLine) {
-			System.out.println(seccion);
+			System.out.print(seccion+" ");
 		}
+		System.out.println();
 
 		// La primera linea debe tener 3 elementos, Método, ResourcePath y versión
 		if (firstLine.length != 3) {
@@ -65,42 +66,26 @@ public class HTTPRequest {
 		this.resourceChain = firstLine[1];
 		String dummyResourcePath[] = new String[1];
 		if (firstLine[1] != "/" && firstLine[1].length() != 1) {
-			System.out.println("flag: " + firstLine[1].length());
+			//BUG: Añade la verdion a resourcePath
 			String[] resourceChainSplited = this.resourceChain.split("/");
-			System.out.println(resourceChainSplited.length);
-			for (int i = 0; i < resourceChainSplited.length; i++) {
-				System.out.println(resourceChainSplited[i]);
-			}
 			dummyResourcePath = new String[resourceChainSplited.length - 1];
 			for (int i = 1; i < resourceChainSplited.length - 1; i++) {
-
-				System.out.println(i + " " + resourceChainSplited[i] + " " + resourceChainSplited.length + " "
-						+ dummyResourcePath.length);
-
 				dummyResourcePath[i - 1] = resourceChainSplited[i];
-				/*
-				 * System.out.println("salmethod " + this.resourcePath.length + " " +
-				 * this.resourcePath[i-1]);
-				 */
 			}
 			dummyResourcePath[dummyResourcePath.length - 1] = resourceChainSplited[resourceChainSplited.length - 1]
 					.split("\\?")[0];
-			for (int i = 0; i < dummyResourcePath.length; i++) {
-				System.out.println(dummyResourcePath[i]);
-			}
 			this.resourcePath = dummyResourcePath;
 
 		} else {
-			System.out.println("flag2: " + firstLine[1].length());
 			// El test me pide un array vacio cuando me pasan /
 			String foo[] = {};
 			this.resourcePath = foo;
 		}
 
 		System.out.println("ResouceChain: " + getResourceChain());
-		System.out.println("ResourcePath: ");
+		System.out.print("ResourcePath: ");
 		for (String seccion : getResourcePath()) {
-			System.out.println(seccion);
+			System.out.print(seccion+" ");
 
 		}
 		// ResourceName
