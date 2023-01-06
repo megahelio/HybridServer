@@ -9,7 +9,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class HTTPRequest {
-	private String url = "";
 
 	private HTTPRequestMethod method;
 	private Map<String, String> headers;
@@ -161,16 +160,6 @@ public class HTTPRequest {
 
 		System.out.println("Final contructor");
 
-	}
-
-	// public HTTPRequest(String reader) throws UnsupportedEncodingException,
-	// HTTPParseException {
-	// url = URLDecoder.decode(reader, "UTF-8");
-
-	// }
-
-	public String getUrl() {
-		return url;
 	}
 
 	public HTTPRequestMethod getMethod() {

@@ -57,10 +57,7 @@ public class ServiceThread implements Runnable {
                                 "<a href=\"html?uuid=" + nuevaPaginaUuid + "\">" + nuevaPaginaUuid + "</a>");
                         response.setStatus(HTTPResponseStatus.S200);
                     } else {
-                        nuevaPaginaUuid = dao.addPage(request.getContent());
-                        response.setContent(
-                                "<a href=\"html?uuid=" + nuevaPaginaUuid + "\">" + nuevaPaginaUuid + "</a>");
-                        response.setStatus(HTTPResponseStatus.S200);
+                        response.setStatus(HTTPResponseStatus.S400);
                     }
 
                 } else if (request.getMethod() == HTTPRequestMethod.GET) {
@@ -68,17 +65,25 @@ public class ServiceThread implements Runnable {
                     // CASO GET
 
                     // Buscamos mediante el dao la pagina que solicita el GET
-                    
+
                     try {
                         System.out.println("try");
                         if (request.getResourceParameters().containsKey("uuid")) {
-                            String content = dao.get(request.getResourceParameters().get("uuid"));
-                            System.out.println(content);
-                            if(content==null){
-                                response.setStatus(HTTPResponseStatus.S404);
-                            }else{
-                                response.setContent(content);
-                                response.setStatus(HTTPResponseStatus.S200);
+                            System.out.println("uuid de la request: " + request.getResourceParameters().get("uuid"));
+                            if (UUIDgenerator.validate(request.getResourceParameters().get("uuid"))) {
+                                System.out.println("uuid de la request: valida");
+
+                                String content = dao.get(request.getResourceParameters().get("uuid"));
+                                System.out.println("Contenido del uuid en la BD: " + content);
+                                if (content == null) {
+                                    response.setStatus(HTTPResponseStatus.S404);
+                                } else {
+                                    response.setContent(content);
+                                    response.setStatus(HTTPResponseStatus.S200);
+                                }
+                            } else {
+                                System.out.println("uuid de la request: invalida");
+                                response.setStatus(HTTPResponseStatus.S400);
                             }
                         } else {
                             throw new NullPointerException();
@@ -92,7 +97,7 @@ public class ServiceThread implements Runnable {
                             System.out.println("Welcome Detected");
                             response.setContent("Hybrid Server");
                             response.setStatus(HTTPResponseStatus.S200);
-                        }else{
+                        } else {
                             response.setContent(dao.listPages());
                             response.setStatus(HTTPResponseStatus.S200);
                         }

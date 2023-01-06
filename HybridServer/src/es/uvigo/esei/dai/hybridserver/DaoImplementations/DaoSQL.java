@@ -107,13 +107,12 @@ public class DaoSQL implements DaoInterface {
 
 	@Override
 	public boolean exist(String id) {
-		try (PreparedStatement statement = getConnection().prepareStatement("SELECT FROM html WHERE uuid=?")) {
+		try (PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM html WHERE uuid=?")) {
 			statement.setString(1, id);
+			try (ResultSet result = statement.executeQuery()) {
+				return result.next();
 
-			if (statement.executeUpdate() != 1)
-				return false;
-			else
-				return true;
+			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
