@@ -79,6 +79,10 @@ public class HTTPResponse {
 		this.content = content;
 	}
 
+	public void addContent(String content){
+		this.content = this.content.concat(content);
+	}
+
 	public Map<String, String> getParameters() {
 		return this.parameters;
 	}

@@ -32,10 +32,10 @@ public class HTTPRequest {
 		BufferedReader readerBuff = new BufferedReader(readerParam);
 
 		// leemos primera linea
-		String[] firstLine =  URLDecoder.decode(readerBuff.readLine(), StandardCharsets.UTF_8).split(" ");
+		String[] firstLine = URLDecoder.decode(readerBuff.readLine(), StandardCharsets.UTF_8).split(" ");
 		System.out.print("firstLine: ");
 		for (String seccion : firstLine) {
-			System.out.print(seccion+" ");
+			System.out.print(seccion + " ");
 		}
 		System.out.println();
 
@@ -66,7 +66,7 @@ public class HTTPRequest {
 		this.resourceChain = firstLine[1];
 		String dummyResourcePath[] = new String[1];
 		if (firstLine[1] != "/" && firstLine[1].length() != 1) {
-			//BUG: Añade la verdion a resourcePath
+			// BUG: Añade la verdion a resourcePath
 			String[] resourceChainSplited = this.resourceChain.split("/");
 			dummyResourcePath = new String[resourceChainSplited.length - 1];
 			for (int i = 1; i < resourceChainSplited.length - 1; i++) {
@@ -85,9 +85,9 @@ public class HTTPRequest {
 		System.out.println("ResouceChain: " + getResourceChain());
 		System.out.print("ResourcePath: ");
 		for (String seccion : getResourcePath()) {
-			System.out.print(seccion+" ");
-
+			System.out.print(seccion + " ");
 		}
+		System.out.println();
 		// ResourceName
 		if (this.resourceChain.contains("?")) {
 			this.resourceName = this.resourceChain.split("\\?")[0].substring(1,
@@ -98,7 +98,8 @@ public class HTTPRequest {
 
 		// ResourceParameters
 		this.resourceParameters = new LinkedHashMap<>();
-		if (getMethod() == HTTPRequestMethod.GET && this.resourceChain.contains("?")) {
+		if ((getMethod() == HTTPRequestMethod.GET && this.resourceChain.contains("?") )|| getMethod() == HTTPRequestMethod.DELETE
+				&& this.resourceChain.contains("?")) {
 			for (String parametro : this.resourceChain.split("\\?")[1].split("&")) {
 				this.resourceParameters.put(parametro.split("=")[0], parametro.split("=")[1]);
 			}
@@ -145,7 +146,8 @@ public class HTTPRequest {
 				this.content = this.content.concat(Character.toString(character));
 				// System.out.print(Character.toString(character));
 			}
-			this.content =  URLDecoder.decode(this.content, StandardCharsets.UTF_8);
+			this.content = URLDecoder.decode(this.content, StandardCharsets.UTF_8);
+			
 			System.out.println("Content: \n" + this.content.toString());
 		}
 

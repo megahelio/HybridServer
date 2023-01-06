@@ -47,36 +47,56 @@ public class ServiceThread implements Runnable {
                     // ******************************************** */
                     // CASO POST
                     // añadimos la pagina al dao
-                    String nuevaPaginaUuid = dao.addPage(request.getContent());
-
-                    response.setContent("<a href=\"html?uuid=" + nuevaPaginaUuid + "\">" + nuevaPaginaUuid + "</a>");
-                    response.setStatus(HTTPResponseStatus.S200);
-
-                } else if (request.getMethod() == HTTPRequestMethod.GET) {
-                    System.out.println("Case GET");
-                   // CASO GET
-
-                    // Buscamos mediante el dao la pagina que solicita el GET
-                    if (request.getResourceChain().equals("/") && !request.getHeaderParameters().containsKey("uuid")) {
-                        response.setContent("Hybrid Server");
+                    System.out.println("request Content:" + request.getContent());
+                    String requestContent = request.getContent();
+                    String nuevaPaginaUuid;
+                    if (requestContent.contains("html=") && requestContent.substring(0, 5).equals("html=")) {
+                        requestContent = requestContent.substring(5);
+                        nuevaPaginaUuid = dao.addPage(requestContent);
+                        response.setContent(
+                                "<a href=\"html?uuid=" + nuevaPaginaUuid + "\">" + nuevaPaginaUuid + "</a>");
+                        response.setStatus(HTTPResponseStatus.S200);
+                    } else {
+                        nuevaPaginaUuid = dao.addPage(request.getContent());
+                        response.setContent(
+                                "<a href=\"html?uuid=" + nuevaPaginaUuid + "\">" + nuevaPaginaUuid + "</a>");
                         response.setStatus(HTTPResponseStatus.S200);
                     }
 
+                } else if (request.getMethod() == HTTPRequestMethod.GET) {
+                    System.out.println("Case GET");
+                    // CASO GET
+
+                    // Buscamos mediante el dao la pagina que solicita el GET
+                    
                     try {
                         System.out.println("try");
-                        if (request.getHeaderParameters().containsKey("uuid")) {
-                            response.setContent(dao.get(request.getHeaderParameters().get("uuid")));
-                            response.setStatus(HTTPResponseStatus.S200);
+                        if (request.getResourceParameters().containsKey("uuid")) {
+                            String content = dao.get(request.getResourceParameters().get("uuid"));
+                            System.out.println(content);
+                            if(content==null){
+                                response.setStatus(HTTPResponseStatus.S404);
+                            }else{
+                                response.setContent(content);
+                                response.setStatus(HTTPResponseStatus.S200);
+                            }
                         } else {
                             throw new NullPointerException();
                         }
                     } catch (NullPointerException e) {
-                        // En el caso de que la página que se busca no exista
 
-                        // Preparamos como contenido la lista de páginas disponibles
                         System.out.println("catch");
-                        response.setContent(dao.listPages());
-                        response.setStatus(HTTPResponseStatus.S200);
+
+                        if (request.getResourceChain().equals("/")
+                                && !request.getHeaderParameters().containsKey("uuid")) {
+                            System.out.println("Welcome Detected");
+                            response.setContent("Hybrid Server");
+                            response.setStatus(HTTPResponseStatus.S200);
+                        }else{
+                            response.setContent(dao.listPages());
+                            response.setStatus(HTTPResponseStatus.S200);
+                        }
+
                     }
 
                 } else if (request.getMethod() == HTTPRequestMethod.DELETE) {
@@ -84,8 +104,9 @@ public class ServiceThread implements Runnable {
                     // ******************************************** */
                     // CASO DELETE
                     // Buscamos mediante el dao la pagina que solicita el GET para borrarla
+
                     try {
-                        dao.deletePage(request.getHeaderParameters().get("uuid"));
+                        dao.deletePage(request.getResourceParameters().get("uuid"));
                         response.setStatus(HTTPResponseStatus.S200);
                     } catch (NullPointerException e) {
                         // En el caso de que la página que se busca no exista
