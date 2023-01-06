@@ -29,7 +29,8 @@ import java.util.concurrent.TimeUnit;
 import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoSQL;
 
 public class HybridServer {
-	private static final String SERVICE_PORT = "8888";
+	private static final String DEFAULT_SERVICE_PORT = "8888";
+	private static final String DEFAULT_nThreads = "50";
 
 	private static int count = 0;
 
@@ -40,10 +41,9 @@ public class HybridServer {
 	private ExecutorService threadPool;
 
 	public HybridServer() {
-		System.out.println("Creando HybridServer");
 		this.prop = new Properties();
-		this.prop.put("numClients", "50");
-		this.prop.put("port", "8888");
+		this.prop.put("numClients", DEFAULT_nThreads);
+		this.prop.put("port", DEFAULT_SERVICE_PORT);
 		this.prop.put("db.url", "jdbc:mysql://localhost:3306/hstestdb");
 		this.prop.put("db.user", "hsdb");
 		this.prop.put("db.password", "hsdbpass");
@@ -55,8 +55,8 @@ public class HybridServer {
 
 	public HybridServer(Map<String, String> pages) {
 		this.prop = new Properties();
-		this.prop.put("numClients", "50");
-		this.prop.put("port", SERVICE_PORT);
+		this.prop.put("numClients", DEFAULT_nThreads);
+		this.prop.put("port", DEFAULT_SERVICE_PORT);
 		this.prop.put("db.url", "jdbc:mysql://localhost:3306/hstestdb");
 		this.prop.put("db.user", "hsdb");
 		this.prop.put("db.password", "hsdbpass");
@@ -67,8 +67,11 @@ public class HybridServer {
 
 	public HybridServer(Properties properties) {
 		this.prop = properties;
-		if(!this.prop.containsKey("port")) {
-			this.prop.put("port", SERVICE_PORT);
+		if (!this.prop.containsKey("port")) {
+			this.prop.put("port", DEFAULT_SERVICE_PORT);
+		}
+		if(!this.prop.containsKey("numClients")){
+			this.prop.put("numClients", DEFAULT_nThreads);
 		}
 
 		// this.dao = new DaoMapper();
@@ -88,25 +91,25 @@ public class HybridServer {
 				try (final ServerSocket serverSocket = new ServerSocket(getPort())) {
 					// try (final ServerSocket serverSocket = new
 					// ServerSocket(Integer.parseInt(prop.getProperty("port")))) {
-					threadPool = Executors.newFixedThreadPool(50);
+					threadPool = Executors.newFixedThreadPool(Integer.parseInt(prop.getProperty("numClients")));
 					// threadPool =
 					// Executors.newFixedThreadPool(Integer.parseInt(prop.getProperty("numClients")));
 					while (true) {
-						
+
 						System.out.println(
 								"HybridServer.WaitingConnection " + (++count) + ": " + serverSocket.toString());
-						
+
 						Socket socket = serverSocket.accept();
-						
+
 						System.out.println("HybridServer.SocketAccept: " + socket.toString());
-						
+
 						if (stop)
 							break;
 						ServiceThread thread = new ServiceThread(socket, dao);
 						// ServiceThreadTester thread = new ServiceThreadTester(socket, dao);
-						
+
 						System.out.println("HybridServer.SocketAccept.Execute");
-						
+
 						// threadPool.execute(thread);
 						threadPool.submit(thread);
 
@@ -125,7 +128,7 @@ public class HybridServer {
 		System.out.println("HybridServer Stop");
 		this.stop = true;
 
-		try (Socket socket = new Socket("localhost",getPort())) {
+		try (Socket socket = new Socket("localhost", getPort())) {
 			// Esta conexión se hace, simplemente, para "despertar" el hilo servidor
 		} catch (IOException e) {
 			throw new RuntimeException(e);
