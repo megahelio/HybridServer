@@ -1,24 +1,24 @@
 package es.uvigo.esei.dai.hybridserver.Controllers;
 
-public class InvalidXSDException extends Exception {
+public class InvalidParameterException extends Exception {
     private static final long serialVersionUID = 1L;
 
-    public InvalidXSDException() {
+    public InvalidParameterException() {
     }
 
-    public InvalidXSDException(String message) {
+    public InvalidParameterException(String message) {
         super(message);
     }
 
-    public InvalidXSDException(Throwable cause) {
+    public InvalidParameterException(Throwable cause) {
         super(cause);
     }
 
-    public InvalidXSDException(String message, Throwable cause) {
+    public InvalidParameterException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public InvalidXSDException(String message, Throwable cause,
+    public InvalidParameterException(String message, Throwable cause,
             boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }

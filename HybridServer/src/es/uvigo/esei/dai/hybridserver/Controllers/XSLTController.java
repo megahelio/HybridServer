@@ -30,7 +30,7 @@ public class XSLTController {
                 if (UUIDgenerator.validate(request.getResourceParameters().get("uuid"))) {
                     System.out.println("uuid de la request: valida");
 
-                    String content = this.daoXSLT.get(request.getResourceParameters().get("uuid"));
+                    String content = this.daoXSLT.getContent(request.getResourceParameters().get("uuid"));
                     System.out.println("Contenido del uuid en la BD: " + content);
                     if (content == null) {
                         response.setStatus(HTTPResponseStatus.S404);
@@ -71,7 +71,7 @@ public class XSLTController {
             String content = request.getResourceParameters().get("xslt");// NullPointerException
 
             if (!this.daoXSD.exist(xsd)) {
-                throw new InvalidXSDException("XSD no exist");
+                throw new InvalidParameterException("XSD no exist");
             }
             nuevaPaginaUuid = this.daoXSLT.addPage(content, xsd);
             System.out.println("flag");
@@ -83,7 +83,7 @@ public class XSLTController {
 
             // BadRequest NO XSD or XSLT
             response.setStatus(HTTPResponseStatus.S400);
-        }catch(InvalidXSDException e){
+        }catch(InvalidParameterException e){
             // NOT FOUND XSD no exite
             response.setStatus(HTTPResponseStatus.S404);
         }

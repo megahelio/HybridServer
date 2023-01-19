@@ -90,9 +90,10 @@ public class HybridServer {
 	public HybridServer(Configuration configuration) {
 		System.out.println("constructor configuration");
 		this.prop = new Properties();
-		this.prop.put("port", configuration.getHttpPort());
-		this.prop.put("numClients", configuration.getNumClients());
-		this.prop.put("webServiceURL", configuration.getWebServiceURL());
+		this.prop.put("port", Integer.toString(configuration.getHttpPort()));
+		this.prop.put("numClients", Integer.toString(configuration.getNumClients()));
+		// this.prop.put("webServiceURL", configuration.getWebServiceURL());
+		System.out.println("flag");
 		this.prop.put("db.user", configuration.getDbUser());
 		this.prop.put("db.password", configuration.getDbPassword());
 		this.prop.put("db.url", configuration.getDbURL());

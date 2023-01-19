@@ -1,5 +1,7 @@
 package es.uvigo.esei.dai.hybridserver.Controllers;
 
+import java.util.Set;
+
 import es.uvigo.esei.dai.hybridserver.UUIDgenerator;
 import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoXSD;
 import es.uvigo.esei.dai.hybridserver.http.HTTPRequest;
@@ -53,12 +55,16 @@ public class XSDController {
     public HTTPResponse post(HTTPRequest request) {
         String nuevaPaginaUuid;
         HTTPResponse response = new HTTPResponse();
+        Set<String> keys = request.getResourceParameters().keySet();
         try {
+            if (!keys.contains("xsd")) {
+                throw new MissedParameterException("No xsd found");
+            }
             nuevaPaginaUuid = this.dao.addPage(request.getResourceParameters().get("xsd"));// NullPointerException
             response.setContent(
                     "<a href=\"xsd?uuid=" + nuevaPaginaUuid + "\">" + nuevaPaginaUuid + "</a>");
             response.setStatus(HTTPResponseStatus.S200);
-        } catch (NullPointerException e) {
+        } catch (MissedParameterException e) {
             response.setStatus(HTTPResponseStatus.S400);
         }
         return response;

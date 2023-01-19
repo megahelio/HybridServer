@@ -35,7 +35,7 @@ public class ServiceThread implements Runnable {
         this.socketVar = socketparam;
         this.response = new HTTPResponse();
         this.htmlController = new HTMLController(daoHTML);
-        this.xmlController = new XMLController(daoXML);
+        this.xmlController = new XMLController(daoXML, daoXSLT, daoXSD);
         this.xsdController = new XSDController(daoXSD);
         this.xsltController = new XSLTController(daoXSLT, daoXSD);
     }

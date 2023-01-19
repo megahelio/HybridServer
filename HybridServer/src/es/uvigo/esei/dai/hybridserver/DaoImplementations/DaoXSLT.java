@@ -48,7 +48,7 @@ public class DaoXSLT {
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
-		
+
 		System.out.println("flag");
 		return uuid;
 	}
@@ -88,13 +88,31 @@ public class DaoXSLT {
 		}
 	}
 
-	public String get(String id) {
+	public String getContent(String id) {
+		// no tiene mucho sentido que te traigas toda la tabla (*) para solo necesitar
+		// la columna content
 		try (PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM xslt WHERE uuid=?")) {
 			statement.setString(1, id);
 
 			try (ResultSet result = statement.executeQuery()) {
 				if (result.next()) {
 					return result.getString("content");
+				} else
+					return null;
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public String getXSD(String id) {
+		//no tiene mucho sentido que te traigas toda la tabla (*) para solo necesitar la columna xsd
+		try (PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM xslt WHERE uuid=?")) {
+			statement.setString(1, id);
+
+			try (ResultSet result = statement.executeQuery()) {
+				if (result.next()) {
+					return result.getString("xsd");
 				} else
 					return null;
 			}

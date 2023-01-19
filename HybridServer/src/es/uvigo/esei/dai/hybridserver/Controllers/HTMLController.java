@@ -1,5 +1,7 @@
 package es.uvigo.esei.dai.hybridserver.Controllers;
 
+import java.util.Set;
+
 import es.uvigo.esei.dai.hybridserver.UUIDgenerator;
 import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoHTML;
 import es.uvigo.esei.dai.hybridserver.http.HTTPRequest;
@@ -55,13 +57,16 @@ public class HTMLController {
     public HTTPResponse post(HTTPRequest request) {
         String nuevaPaginaUuid;
         HTTPResponse response = new HTTPResponse();
-
+        Set<String> keys = request.getResourceParameters().keySet();
         try {
+            if (!keys.contains("html")) {
+                throw new MissedParameterException("No html found");
+            }
             nuevaPaginaUuid = this.dao.addPage(request.getResourceParameters().get("html"));
             response.setContent(
                     "<a href=\"html?uuid=" + nuevaPaginaUuid + "\">" + nuevaPaginaUuid + "</a>");
             response.setStatus(HTTPResponseStatus.S200);
-        } catch (NullPointerException e) {
+        } catch (MissedParameterException e) {
             response.setStatus(HTTPResponseStatus.S400);
         }
         return response;
