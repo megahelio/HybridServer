@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.esei.uvigo.es/dai/hybridserver"
+  xmlns="http://www.esei.uvigo.es/dai/hybridserver"
+  elementFormDefault="qualified">
+  <xs:element name="configuration">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="connections">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="http" type="xs:unsignedShort"/>
+              <xs:element name="webservice" type="xs:anyURI"/>
+              <xs:element name="numClients" type="xs:unsignedByte"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="database">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="user" type="xs:string"/>
+              <xs:element name="password" type="xs:string"/>
+              <xs:element name="url" type="xs:anyURI"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="servers">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="server" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="name" type="xs:string"/>
+                    <xs:element name="wsdl" type="xs:anyURI"/>
+                    <xs:element name="namespace" type="xs:anyURI"/>
+                    <xs:element name="service" type="xs:string"/>
+                    <xs:element name="httpAddress" type="xs:anyURI"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

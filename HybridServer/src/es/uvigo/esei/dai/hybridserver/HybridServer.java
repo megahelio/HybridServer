@@ -20,66 +20,96 @@ package es.uvigo.esei.dai.hybridserver;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoSQL;
+import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoHTML;
+import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoXML;
+import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoXSD;
+import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoXSLT;
 
 public class HybridServer {
-	private static final String DEFAULT_SERVICE_PORT = "8888";
-	private static final String DEFAULT_nThreads = "50";
-
 	private static int count = 0;
 
 	private Thread serverThread;
 	private boolean stop;
-	private DaoInterface dao;
 	private Properties prop;
 	private ExecutorService threadPool;
+	private DaoXML daoXML;
+	private DaoHTML daoHTML;
+	private DaoXSD daoXSD;
+	private DaoXSLT daoXSLT;
 
 	public HybridServer() {
+		System.out.println("constructor vacío");
+		Configuration configuration = new Configuration();
 		this.prop = new Properties();
-		this.prop.put("numClients", DEFAULT_nThreads);
-		this.prop.put("port", DEFAULT_SERVICE_PORT);
-		this.prop.put("db.url", "jdbc:mysql://localhost:3306/hstestdb");
-		this.prop.put("db.user", "hsdb");
-		this.prop.put("db.password", "hsdbpass");
+		this.prop.put("port", Integer.toString(configuration.getHttpPort()));
+		this.prop.put("numClients", Integer.toString(configuration.getNumClients()));
+		// this.prop.put("webServiceURL", configuration.getWebServiceURL());
+		this.prop.put("db.user", configuration.getDbUser());
+		this.prop.put("db.password", configuration.getDbPassword());
+		this.prop.put("db.url", configuration.getDbURL());
+		System.out.println("Propertis: " + this.prop.toString());
 
-		this.dao = new DaoSQL(this.prop.getProperty("db.url"), this.prop.getProperty("db.user"),
+		this.daoHTML = new DaoHTML(this.prop.getProperty("db.url"), this.prop.getProperty("db.user"),
 				this.prop.getProperty("db.password"));
-		// this.dao = new DaoMapper();
-	}
-
-	public HybridServer(Map<String, String> pages) {
-		this.prop = new Properties();
-		this.prop.put("numClients", DEFAULT_nThreads);
-		this.prop.put("port", DEFAULT_SERVICE_PORT);
-		this.prop.put("db.url", "jdbc:mysql://localhost:3306/hstestdb");
-		this.prop.put("db.user", "hsdb");
-		this.prop.put("db.password", "hsdbpass");
-
-		this.dao = new DaoSQL(this.prop.getProperty("db.url"), this.prop.getProperty("db.user"),
+		this.daoXML = new DaoXML(this.prop.getProperty("db.url"), this.prop.getProperty("db.user"),
+				this.prop.getProperty("db.password"));
+		this.daoXSD = new DaoXSD(this.prop.getProperty("db.url"), this.prop.getProperty("db.user"),
+				this.prop.getProperty("db.password"));
+		this.daoXSLT = new DaoXSLT(this.prop.getProperty("db.url"), this.prop.getProperty("db.user"),
 				this.prop.getProperty("db.password"));
 	}
 
 	public HybridServer(Properties properties) {
+		System.out.println("constructor properties");
+		Configuration configuration = new Configuration();
 		this.prop = properties;
 		if (!this.prop.containsKey("port")) {
-			this.prop.put("port", DEFAULT_SERVICE_PORT);
+			this.prop.put("port", configuration.getHttpPort());
 		}
-		if(!this.prop.containsKey("numClients")){
-			this.prop.put("numClients", DEFAULT_nThreads);
+		if (!this.prop.containsKey("numClients")) {
+			this.prop.put("numClients", configuration.getNumClients());
 		}
+		System.out.println("Propertis: " + this.prop.toString());
 
 		// this.dao = new DaoMapper();
-		this.dao = new DaoSQL(this.prop.getProperty("db.url"), this.prop.getProperty("db.user"),
+		this.daoHTML = new DaoHTML(this.prop.getProperty("db.url"), this.prop.getProperty("db.user"),
+				this.prop.getProperty("db.password"));
+		this.daoXML = new DaoXML(this.prop.getProperty("db.url"), this.prop.getProperty("db.user"),
+				this.prop.getProperty("db.password"));
+		this.daoXSD = new DaoXSD(this.prop.getProperty("db.url"), this.prop.getProperty("db.user"),
+				this.prop.getProperty("db.password"));
+		this.daoXSLT = new DaoXSLT(this.prop.getProperty("db.url"), this.prop.getProperty("db.user"),
 				this.prop.getProperty("db.password"));
 	}
 
+	public HybridServer(Configuration configuration) {
+		System.out.println("constructor configuration");
+		this.prop = new Properties();
+		this.prop.put("port", configuration.getHttpPort());
+		this.prop.put("numClients", configuration.getNumClients());
+		this.prop.put("webServiceURL", configuration.getWebServiceURL());
+		this.prop.put("db.user", configuration.getDbUser());
+		this.prop.put("db.password", configuration.getDbPassword());
+		this.prop.put("db.url", configuration.getDbURL());
+		System.out.println("Propertis: " + this.prop.toString());
+		this.daoHTML = new DaoHTML(this.prop.getProperty("db.url"), this.prop.getProperty("db.user"),
+				this.prop.getProperty("db.password"));
+		this.daoXML = new DaoXML(this.prop.getProperty("db.url"), this.prop.getProperty("db.user"),
+				this.prop.getProperty("db.password"));
+		this.daoXSD = new DaoXSD(this.prop.getProperty("db.url"), this.prop.getProperty("db.user"),
+				this.prop.getProperty("db.password"));
+		this.daoXSLT = new DaoXSLT(this.prop.getProperty("db.url"), this.prop.getProperty("db.user"),
+				this.prop.getProperty("db.password"));
+
+	}
+
 	public int getPort() {
+		System.out.println(this.prop.getProperty("port"));
 		return Integer.parseInt(this.prop.getProperty("port"));
 	}
 
@@ -105,7 +135,7 @@ public class HybridServer {
 
 						if (stop)
 							break;
-						ServiceThread thread = new ServiceThread(socket, dao);
+						ServiceThread thread = new ServiceThread(socket, daoHTML, daoXML, daoXSD, daoXSLT);
 						// ServiceThreadTester thread = new ServiceThreadTester(socket, dao);
 
 						System.out.println("HybridServer.SocketAccept.Execute");

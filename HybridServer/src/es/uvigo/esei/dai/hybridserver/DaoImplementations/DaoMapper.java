@@ -11,22 +11,20 @@ public class DaoMapper implements DaoInterface {
     private static Map<String, String> mapa;
 
     public DaoMapper(Map<String, String> pages) {
-        System.out.println("Creando DaoMapper");
+        // System.out.println("Creando DaoMapper");
         mapa = new LinkedHashMap<>(pages);
     }
 
     public DaoMapper() {
-        System.out.println("Creando DaoMapper");
+        // System.out.println("Creando DaoMapper");
         mapa = new LinkedHashMap<>();
     }
 
     @Override
     public String addPage(String content) {
-        System.out.println("DaoMapper Addpage Start");
+        System.out.println("DaoMapper Addpage: "+ content);
         String toret = UUIDgenerator.generate();
-        System.out.println(content);
         mapa.put(UUIDgenerator.generate(), content);
-        System.out.println("DaoMapper Addpage End");
         return toret;
     }
 
@@ -37,7 +35,7 @@ public class DaoMapper implements DaoInterface {
 
     @Override
     public String listPages() {
-        System.out.println(mapa.keySet().toString());
+        System.out.println("DAO HTML listPages:" + mapa.keySet().toString());
         return mapa.keySet().toString();
     }
 

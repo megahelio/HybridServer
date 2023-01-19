@@ -12,7 +12,7 @@ import java.util.List;
 import es.uvigo.esei.dai.hybridserver.DaoInterface;
 import es.uvigo.esei.dai.hybridserver.UUIDgenerator;
 
-public class DaoSQL implements DaoInterface {
+public class DaoHTML implements DaoInterface {
 
 	private String url;
 	private String user;
@@ -23,7 +23,7 @@ public class DaoSQL implements DaoInterface {
 	 * @param user
 	 * @param password
 	 */
-	public DaoSQL(String url, String user, String password) {
+	public DaoHTML(String url, String user, String password) {
 		this.url = url;
 		this.user = user;
 		this.password = password;
@@ -73,7 +73,7 @@ public class DaoSQL implements DaoInterface {
 				final List<String> html = new ArrayList<>();
 
 				while (result.next()) {
-					html.add(result.getString("content"));
+					html.add(result.getString("uuid"));
 				}
 
 				StringBuilder toRet = new StringBuilder();

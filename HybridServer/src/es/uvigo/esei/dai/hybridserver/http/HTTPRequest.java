@@ -26,18 +26,12 @@ public class HTTPRequest {
 	 * @throws HTTPParseException
 	 */
 	public HTTPRequest(Reader readerParam) throws IOException, HTTPParseException {
-		System.out.println("HTTPRequest Creator");
-		// this.url = URLDecoder.decode(this.url, "UTF-8");
 		BufferedReader readerBuff = new BufferedReader(readerParam);
 
 		// leemos primera linea
 		String[] firstLine = URLDecoder.decode(readerBuff.readLine(), StandardCharsets.UTF_8).split(" ");
-		System.out.print("firstLine: ");
-		for (String seccion : firstLine) {
-			System.out.print(seccion + " ");
-		}
-		System.out.println();
 
+	
 		// La primera linea debe tener 3 elementos, Método, ResourcePath y versión
 		if (firstLine.length != 3) {
 			throw new HTTPParseException("Primera linea Inválida");
@@ -50,7 +44,6 @@ public class HTTPRequest {
 		for (HTTPRequestMethod c : HTTPRequestMethod.values()) {
 			if (method.equals(c.toString())) {
 				this.method = c;
-				System.out.println("Method: " + getMethod().toString());
 			}
 		}
 		// Si no encaja con ningun metodo lanzamos excepcion
@@ -80,13 +73,6 @@ public class HTTPRequest {
 			String foo[] = {};
 			this.resourcePath = foo;
 		}
-
-		System.out.println("ResouceChain: " + getResourceChain());
-		System.out.print("ResourcePath: ");
-		for (String seccion : getResourcePath()) {
-			System.out.print(seccion + " ");
-		}
-		System.out.println();
 		// ResourceName
 		if (this.resourceChain.contains("?")) {
 			this.resourceName = this.resourceChain.split("\\?")[0].substring(1,
@@ -106,7 +92,7 @@ public class HTTPRequest {
 		// Buscamos la versión
 		if (firstLine[2].equals("HTTP/1.1") || firstLine[2].equals("HTTP/0.9") || firstLine[2].equals("HTTP/1.0")) {
 			this.version = firstLine[2];
-			System.out.println("Version: " + getHttpVersion());
+		
 		} else {
 			throw new HTTPParseException("Versión inválida");
 		}
@@ -115,18 +101,13 @@ public class HTTPRequest {
 		String[] aSplitedHeader = new String[2];
 		this.headers = new LinkedHashMap<>();
 		aHeader = URLDecoder.decode(readerBuff.readLine(), StandardCharsets.UTF_8);
-		System.out.println(aHeader);
 		while (aHeader.length() != 0) {
-			System.out.println("aHeader: " + aHeader.length());
 			if (aHeader.contains(": ")) {
-				System.out.println(aHeader.split(": ")[0] + " " + aHeader.split(": ")[1]);
 				aSplitedHeader = aHeader.split(": ");
-				System.out.println(aSplitedHeader[0] + " " + aSplitedHeader[1]);
 				if (aSplitedHeader.length != 2) {
 					throw new HTTPParseException("Cabecera Inválida (Alguna cabecera tiene más de un : )");
 				}
 				this.headers.put(aSplitedHeader[0], aSplitedHeader[1]);
-				System.out.println("Header Params: " + getHeaderParameters().toString());
 
 			} else {
 				throw new HTTPParseException("Cabecera Inválida (Alguna cabecera no contiene :)");
@@ -138,16 +119,13 @@ public class HTTPRequest {
 		if (this.headers.containsKey("Content-Length")) {
 			this.contentLenght = Integer.parseInt(this.headers.get("Content-Length"));
 			char[] contentChars = new char[Integer.parseInt(this.headers.get("Content-Length"))];
-			System.out.println(this.contentLenght);
 			readerBuff.read(contentChars, 0, Integer.parseInt(this.headers.get("Content-Length")));
 			this.content = "";
 			for (char character : contentChars) {
 				this.content = this.content.concat(Character.toString(character));
-				// System.out.print(Character.toString(character));
 			}
 			this.content = URLDecoder.decode(this.content, StandardCharsets.UTF_8);
 			
-			System.out.println("Content: \n" + this.content.toString());
 		}
 
 		// ResourceParameters POST
@@ -157,8 +135,6 @@ public class HTTPRequest {
 			}
 
 		}
-
-		System.out.println("Final contructor");
 
 	}
 
