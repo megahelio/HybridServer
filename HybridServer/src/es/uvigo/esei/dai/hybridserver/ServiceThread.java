@@ -13,11 +13,11 @@ import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoHTML;
 import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoXML;
 import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoXSD;
 import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoXSLT;
-import es.uvigo.esei.dai.hybridserver.http.HTTPParseException;
 import es.uvigo.esei.dai.hybridserver.http.HTTPRequest;
 import es.uvigo.esei.dai.hybridserver.http.HTTPRequestMethod;
 import es.uvigo.esei.dai.hybridserver.http.HTTPResponse;
 import es.uvigo.esei.dai.hybridserver.http.HTTPResponseStatus;
+import es.uvigo.esei.dai.hybridserver.http.exceptions.HTTPParseException;
 
 public class ServiceThread implements Runnable {
     private static int count = 0;

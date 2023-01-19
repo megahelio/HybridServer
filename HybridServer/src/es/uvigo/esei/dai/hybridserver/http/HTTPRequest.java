@@ -8,6 +8,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import es.uvigo.esei.dai.hybridserver.http.exceptions.HTTPParseException;
+
 public class HTTPRequest {
 
 	private HTTPRequestMethod method;

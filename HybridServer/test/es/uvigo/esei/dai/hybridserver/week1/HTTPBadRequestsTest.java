@@ -28,8 +28,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import es.uvigo.esei.dai.hybridserver.http.HTTPParseException;
 import es.uvigo.esei.dai.hybridserver.http.HTTPRequest;
+import es.uvigo.esei.dai.hybridserver.http.exceptions.HTTPParseException;
 
 @RunWith(Parameterized.class)
 public class HTTPBadRequestsTest {

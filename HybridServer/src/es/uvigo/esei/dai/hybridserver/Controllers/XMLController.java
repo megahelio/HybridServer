@@ -3,6 +3,9 @@ package es.uvigo.esei.dai.hybridserver.Controllers;
 import java.util.Set;
 
 import es.uvigo.esei.dai.hybridserver.UUIDgenerator;
+import es.uvigo.esei.dai.hybridserver.XMLUtility;
+import es.uvigo.esei.dai.hybridserver.Controllers.exceptions.InvalidParameterException;
+import es.uvigo.esei.dai.hybridserver.Controllers.exceptions.MissedParameterException;
 import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoXML;
 import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoXSD;
 import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoXSLT;
@@ -46,32 +49,37 @@ public class XMLController {
             }
 
             System.out.println("uuid de la request: valida");
-            String content = this.daoXML.get(uuid);// return null if no exist
-            System.out.println("Contenido del uuid en la BD: " + content);
+            String xml = this.daoXML.get(uuid);// return null if no exist
+            System.out.println("Contenido del uuid en la BD: " + xml);
 
-            if (content == null) {
+            if (xml == null) {
                 // NOT FOUND
                 response.setStatus(HTTPResponseStatus.S404);
             } else {
                 // Si no existe xslt en la request respondemos el xml
                 if (!keys.contains("xslt")) {
-                    response.setContent(content);
+                    response.setContent(xml);
                     response.putParameter("Content-Type", "application/xml");
                     response.setStatus(HTTPResponseStatus.S200);
                 } else {
                     // Si la request contiene un xslt que no existe en la base de datos o el xsd que
                     // está asociado a este no existe
-
+                    String xslt = this.daoXSLT.getContent(request.getResourceParameters().get("xslt"));
+                    String xsd = this.daoXSD.get(this.daoXSLT.getXSD(request.getResourceParameters().get("xslt")));
                     // NOTA: La aplicación no permite crear xslt vinculados a un xsd inexistente
-                    if ((!this.daoXSLT.exist(request.getResourceParameters().get("xslt")) ||
-                            (!this.daoXSD.exist(this.daoXSLT.getXSD(request.getResourceParameters().get("xslt")))))) {
+                    if (xslt == null || xsd == null) {
 
                         // NOT FOUND
                         response.setStatus(HTTPResponseStatus.S404);
                     } else {
-
-                        response.putParameter("Content-Type", "text/html");
-                        response.setStatus(HTTPResponseStatus.S200);
+                        if (XMLUtility.validateSchema(xml, xsd)) {
+                            response.setContent(XMLUtility.xmlToHtml(xml, xslt));
+                            response.putParameter("Content-Type", "text/html");
+                            response.setStatus(HTTPResponseStatus.S200);
+                        } else {
+                            //Bad Request XSLT inválido (XSD del XSLT no valida XML solicitado)
+                            response.setStatus(HTTPResponseStatus.S400);
+                        }
                     }
                 }
             }

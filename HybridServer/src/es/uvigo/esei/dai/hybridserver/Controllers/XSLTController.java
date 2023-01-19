@@ -3,6 +3,8 @@ package es.uvigo.esei.dai.hybridserver.Controllers;
 import java.util.Set;
 
 import es.uvigo.esei.dai.hybridserver.UUIDgenerator;
+import es.uvigo.esei.dai.hybridserver.Controllers.exceptions.InvalidParameterException;
+import es.uvigo.esei.dai.hybridserver.Controllers.exceptions.MissedParameterException;
 import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoXSD;
 import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoXSLT;
 import es.uvigo.esei.dai.hybridserver.http.HTTPRequest;

@@ -33,7 +33,7 @@ public class Configuration {
 	
 	public Configuration() {
 		this(
-			8899,
+			8888,
 			50,
 			null,
 			"hsdb",
