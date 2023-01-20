@@ -1,10 +1,10 @@
-package es.uvigo.esei.dai.hybridserver.Controllers;
+package es.uvigo.esei.dai.hybridserver.controllers;
 
 import java.util.Set;
 
-import es.uvigo.esei.dai.hybridserver.UUIDgenerator;
-import es.uvigo.esei.dai.hybridserver.Controllers.exceptions.MissedParameterException;
-import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoHTML;
+import es.uvigo.esei.dai.hybridserver.controllers.exceptions.MissedParameterException;
+import es.uvigo.esei.dai.hybridserver.dao.DaoHTML;
+import es.uvigo.esei.dai.hybridserver.dao.UUIDgenerator;
 import es.uvigo.esei.dai.hybridserver.http.HTTPRequest;
 import es.uvigo.esei.dai.hybridserver.http.HTTPResponse;
 import es.uvigo.esei.dai.hybridserver.http.HTTPResponseStatus;

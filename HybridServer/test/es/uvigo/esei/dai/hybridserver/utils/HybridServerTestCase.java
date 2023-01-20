@@ -25,7 +25,7 @@ import org.junit.Rule;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
 
-import es.uvigo.esei.dai.hybridserver.HybridServer;
+import es.uvigo.esei.dai.hybridserver.core.HybridServer;
 
 public abstract class HybridServerTestCase {
 	protected HybridServer server;

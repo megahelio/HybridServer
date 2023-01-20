@@ -38,7 +38,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import es.uvigo.esei.dai.hybridserver.HybridServer;
+import es.uvigo.esei.dai.hybridserver.core.HybridServer;
 
 @RunWith(Parameterized.class)
 public class CustomPortTest {

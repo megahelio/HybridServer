@@ -1,4 +1,4 @@
-package es.uvigo.esei.dai.hybridserver.Controllers.exceptions;
+package es.uvigo.esei.dai.hybridserver.controllers.exceptions;
 
 public class InvalidParameterException extends Exception {
     private static final long serialVersionUID = 1L;

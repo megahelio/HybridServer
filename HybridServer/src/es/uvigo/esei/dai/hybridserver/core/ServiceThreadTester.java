@@ -1,9 +1,10 @@
-package es.uvigo.esei.dai.hybridserver;
+package es.uvigo.esei.dai.hybridserver.core;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.Socket;
 
+import es.uvigo.esei.dai.hybridserver.dao.DaoInterface;
 import es.uvigo.esei.dai.hybridserver.http.HTTPRequest;
 import es.uvigo.esei.dai.hybridserver.http.HTTPResponse;
 import es.uvigo.esei.dai.hybridserver.http.HTTPResponseStatus;

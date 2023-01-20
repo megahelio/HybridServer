@@ -9,18 +9,18 @@
         <xs:element name="connections">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="http" type="xs:unsignedShort"/>
-              <xs:element name="webservice" type="xs:anyURI"/>
-              <xs:element name="numClients" type="xs:unsignedByte"/>
+              <xs:element name="http" type="xs:unsignedShort" />
+              <xs:element name="webservice" type="xs:anyURI" />
+              <xs:element name="numClients" type="xs:unsignedByte" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
         <xs:element name="database">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="user" type="xs:string"/>
-              <xs:element name="password" type="xs:string"/>
-              <xs:element name="url" type="xs:anyURI"/>
+              <xs:element name="user" type="xs:string" />
+              <xs:element name="password" type="xs:string" />
+              <xs:element name="url" type="xs:anyURI" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -29,13 +29,11 @@
             <xs:sequence>
               <xs:element name="server" maxOccurs="unbounded">
                 <xs:complexType>
-                  <xs:sequence>
-                    <xs:element name="name" type="xs:string"/>
-                    <xs:element name="wsdl" type="xs:anyURI"/>
-                    <xs:element name="namespace" type="xs:anyURI"/>
-                    <xs:element name="service" type="xs:string"/>
-                    <xs:element name="httpAddress" type="xs:anyURI"/>
-                  </xs:sequence>
+                  <xs:attribute name="name" />
+                  <xs:attribute name="wsdl" />
+                  <xs:attribute name="namespace" />
+                  <xs:attribute name="service" />
+                  <xs:attribute name="httpAddress" />
                 </xs:complexType>
               </xs:element>
             </xs:sequence>

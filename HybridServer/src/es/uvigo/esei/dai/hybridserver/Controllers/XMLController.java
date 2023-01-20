@@ -1,17 +1,17 @@
-package es.uvigo.esei.dai.hybridserver.Controllers;
+package es.uvigo.esei.dai.hybridserver.controllers;
 
 import java.util.Set;
 
-import es.uvigo.esei.dai.hybridserver.UUIDgenerator;
-import es.uvigo.esei.dai.hybridserver.XMLUtility;
-import es.uvigo.esei.dai.hybridserver.Controllers.exceptions.InvalidParameterException;
-import es.uvigo.esei.dai.hybridserver.Controllers.exceptions.MissedParameterException;
-import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoXML;
-import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoXSD;
-import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoXSLT;
+import es.uvigo.esei.dai.hybridserver.controllers.exceptions.InvalidParameterException;
+import es.uvigo.esei.dai.hybridserver.controllers.exceptions.MissedParameterException;
+import es.uvigo.esei.dai.hybridserver.dao.DaoXML;
+import es.uvigo.esei.dai.hybridserver.dao.DaoXSD;
+import es.uvigo.esei.dai.hybridserver.dao.DaoXSLT;
+import es.uvigo.esei.dai.hybridserver.dao.UUIDgenerator;
 import es.uvigo.esei.dai.hybridserver.http.HTTPRequest;
 import es.uvigo.esei.dai.hybridserver.http.HTTPResponse;
 import es.uvigo.esei.dai.hybridserver.http.HTTPResponseStatus;
+import es.uvigo.esei.dai.hybridserver.xml.XMLUtility;
 
 public class XMLController {
 
@@ -72,13 +72,16 @@ public class XMLController {
                         // NOT FOUND
                         response.setStatus(HTTPResponseStatus.S404);
                     } else {
-                        if (XMLUtility.validateSchema(xml, xsd)) {
+                        try {
+                            XMLUtility.validateSchema(xml, xsd);
                             response.setContent(XMLUtility.xmlToHtml(xml, xslt));
                             response.putParameter("Content-Type", "text/html");
                             response.setStatus(HTTPResponseStatus.S200);
-                        } else {
-                            //Bad Request XSLT inválido (XSD del XSLT no valida XML solicitado)
+
+                        } catch (Exception e) {
+                            // Bad Request XSLT inválido (XSD del XSLT no valida XML solicitado)
                             response.setStatus(HTTPResponseStatus.S400);
+
                         }
                     }
                 }

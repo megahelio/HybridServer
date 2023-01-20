@@ -15,7 +15,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package es.uvigo.esei.dai.hybridserver;
+package es.uvigo.esei.dai.hybridserver.core;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -25,10 +25,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoHTML;
-import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoXML;
-import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoXSD;
-import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoXSLT;
+import es.uvigo.esei.dai.hybridserver.configuration.Configuration;
+import es.uvigo.esei.dai.hybridserver.dao.DaoHTML;
+import es.uvigo.esei.dai.hybridserver.dao.DaoXML;
+import es.uvigo.esei.dai.hybridserver.dao.DaoXSD;
+import es.uvigo.esei.dai.hybridserver.dao.DaoXSLT;
 
 public class HybridServer {
 	private static int count = 0;
@@ -93,7 +94,6 @@ public class HybridServer {
 		this.prop.put("port", Integer.toString(configuration.getHttpPort()));
 		this.prop.put("numClients", Integer.toString(configuration.getNumClients()));
 		// this.prop.put("webServiceURL", configuration.getWebServiceURL());
-		System.out.println("flag");
 		this.prop.put("db.user", configuration.getDbUser());
 		this.prop.put("db.password", configuration.getDbPassword());
 		this.prop.put("db.url", configuration.getDbURL());

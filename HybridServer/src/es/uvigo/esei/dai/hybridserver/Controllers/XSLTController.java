@@ -1,12 +1,12 @@
-package es.uvigo.esei.dai.hybridserver.Controllers;
+package es.uvigo.esei.dai.hybridserver.controllers;
 
 import java.util.Set;
 
-import es.uvigo.esei.dai.hybridserver.UUIDgenerator;
-import es.uvigo.esei.dai.hybridserver.Controllers.exceptions.InvalidParameterException;
-import es.uvigo.esei.dai.hybridserver.Controllers.exceptions.MissedParameterException;
-import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoXSD;
-import es.uvigo.esei.dai.hybridserver.DaoImplementations.DaoXSLT;
+import es.uvigo.esei.dai.hybridserver.controllers.exceptions.InvalidParameterException;
+import es.uvigo.esei.dai.hybridserver.controllers.exceptions.MissedParameterException;
+import es.uvigo.esei.dai.hybridserver.dao.DaoXSD;
+import es.uvigo.esei.dai.hybridserver.dao.DaoXSLT;
+import es.uvigo.esei.dai.hybridserver.dao.UUIDgenerator;
 import es.uvigo.esei.dai.hybridserver.http.HTTPRequest;
 import es.uvigo.esei.dai.hybridserver.http.HTTPResponse;
 import es.uvigo.esei.dai.hybridserver.http.HTTPResponseStatus;
@@ -76,7 +76,6 @@ public class XSLTController {
                 throw new InvalidParameterException("XSD no exist");
             }
             nuevaPaginaUuid = this.daoXSLT.addPage(content, xsd);
-            System.out.println("flag");
             response.setContent(
                     "<a href=\"xslt?uuid=" + nuevaPaginaUuid + "\">" + nuevaPaginaUuid + "</a>");
             response.setStatus(HTTPResponseStatus.S200);

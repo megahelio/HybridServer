@@ -27,9 +27,9 @@ import java.io.File;
 import org.junit.Before;
 import org.junit.Test;
 
-import es.uvigo.esei.dai.hybridserver.Configuration;
-import es.uvigo.esei.dai.hybridserver.ServerConfiguration;
-import es.uvigo.esei.dai.hybridserver.XMLConfigurationLoader;
+import es.uvigo.esei.dai.hybridserver.configuration.Configuration;
+import es.uvigo.esei.dai.hybridserver.configuration.ServerConfiguration;
+import es.uvigo.esei.dai.hybridserver.configuration.XMLConfigurationLoader;
 
 public class XMLConfigurationLoaderTest {
 	private XMLConfigurationLoader xmlConfiguration;

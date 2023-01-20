@@ -1,4 +1,4 @@
-package es.uvigo.esei.dai.hybridserver.DaoImplementations;
+package es.uvigo.esei.dai.hybridserver.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,10 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.uvigo.esei.dai.hybridserver.DaoInterface;
-import es.uvigo.esei.dai.hybridserver.UUIDgenerator;
-
-public class DaoHTML implements DaoInterface {
+public class DaoXSD implements DaoInterface {
 
 	private String url;
 	private String user;
@@ -23,7 +20,7 @@ public class DaoHTML implements DaoInterface {
 	 * @param user
 	 * @param password
 	 */
-	public DaoHTML(String url, String user, String password) {
+	public DaoXSD(String url, String user, String password) {
 		this.url = url;
 		this.user = user;
 		this.password = password;
@@ -38,7 +35,7 @@ public class DaoHTML implements DaoInterface {
 	public String addPage(String content) {
 		String uuid = UUIDgenerator.generate();
 		try (PreparedStatement statement = getConnection()
-				.prepareStatement("INSERT INTO HTML (uuid, content) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+				.prepareStatement("INSERT INTO XSD (uuid, content) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS)) {
 			statement.setString(1, uuid);
 			statement.setString(2, content);
 
@@ -55,7 +52,7 @@ public class DaoHTML implements DaoInterface {
 	@Override
 	public void deletePage(String id) {
 
-		try (PreparedStatement statement = getConnection().prepareStatement("DELETE FROM html WHERE uuid=?")) {
+		try (PreparedStatement statement = getConnection().prepareStatement("DELETE FROM xsd WHERE uuid=?")) {
 			statement.setString(1, id);
 
 			if (statement.executeUpdate() != 1)
@@ -69,16 +66,16 @@ public class DaoHTML implements DaoInterface {
 	@Override
 	public String listPages() {
 		try (Statement statement = getConnection().createStatement()) {
-			try (ResultSet result = statement.executeQuery("SELECT * FROM html")) {
-				final List<String> html = new ArrayList<>();
+			try (ResultSet result = statement.executeQuery("SELECT * FROM xsd")) {
+				final List<String> xsd = new ArrayList<>();
 
 				while (result.next()) {
-					html.add(result.getString("uuid"));
+					xsd.add(result.getString("uuid"));
 				}
 
 				StringBuilder toRet = new StringBuilder();
 
-				for (String i : html) {
+				for (String i : xsd) {
 					toRet.append(i + "\n");
 				}
 
@@ -91,7 +88,7 @@ public class DaoHTML implements DaoInterface {
 
 	@Override
 	public String get(String id) {
-		try (PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM html WHERE uuid=?")) {
+		try (PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM xsd WHERE uuid=?")) {
 			statement.setString(1, id);
 
 			try (ResultSet result = statement.executeQuery()) {
@@ -107,7 +104,7 @@ public class DaoHTML implements DaoInterface {
 
 	@Override
 	public boolean exist(String id) {
-		try (PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM html WHERE uuid=?")) {
+		try (PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM xsd WHERE uuid=?")) {
 			statement.setString(1, id);
 			try (ResultSet result = statement.executeQuery()) {
 				return result.next();

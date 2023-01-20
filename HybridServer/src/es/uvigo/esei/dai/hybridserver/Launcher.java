@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Properties;
 
+import es.uvigo.esei.dai.hybridserver.core.HybridServer;
+
 public class Launcher {
 
 	public static void main(String[] args) {
