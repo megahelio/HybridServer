@@ -7,6 +7,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -28,26 +29,35 @@ import java.io.StringWriter;
 
 public class XMLUtility {
 
-    public static boolean validateSchema(String xml, String xsd) throws Exception {
-        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Schema schema = factory.newSchema(new StreamSource(new StringReader(xsd)));
-        Validator validator = schema.newValidator();
-        validator.setErrorHandler(new SimpleErrorHandler());
-        validator.validate(new StreamSource(new StringReader(xml)));
-        return true;
+    public static boolean validateSchema(String xml, String xsd) {
+
+        try {
+            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            Schema schema = factory.newSchema(new StreamSource(new StringReader(xsd)));
+            Validator validator = schema.newValidator();
+            validator.setErrorHandler(new SimpleErrorHandler());
+            validator.validate(new StreamSource(new StringReader(xml)));
+            return true;
+
+        } catch (SAXException | IOException e) {
+
+            return false;
+        }
     }
 
     public static String xmlToHtml(String xml, String xslt) {
+
         try {
             TransformerFactory factory = TransformerFactory.newInstance();
             Transformer transformer = factory.newTransformer(new StreamSource(new StringReader(xslt)));
             StringWriter writer = new StringWriter();
             transformer.transform(new StreamSource(new StringReader(xml)), new StreamResult(writer));
             return writer.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        } catch (TransformerException e) {
             return null;
         }
+
     }
 
     // Carga y validación con XSD de un documento almacenado en un fichero con

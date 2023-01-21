@@ -57,7 +57,7 @@ public class ServiceThread implements Runnable {
                 request = new HTTPRequest(inputReader);// THROWS HTTPParseException
                 System.out.println("Request ToString: " + request.toString());
                 System.out.println("Parameters :" + request.getResourceParameters());
-                // System.out.println("ResourceName: " + request.getResourceName());
+                System.out.println("ResourceName: " + request.getResourceName());
                 // System.out.println("Method: " + request.getMethod());
 
                 switch (request.getResourceName()) {
@@ -68,7 +68,11 @@ public class ServiceThread implements Runnable {
                                 response = this.htmlController.delete(request);
                                 break;
                             case GET:
-                                response = this.htmlController.get(request);
+                                if (request.getResourceParameters().containsKey("uuid")) {
+                                    response = this.htmlController.get(request);
+                                } else {
+                                    response = this.htmlController.list(request);
+                                }
                                 break;
                             case POST:
                                 response = this.htmlController.post(request);
@@ -86,7 +90,11 @@ public class ServiceThread implements Runnable {
                                 response = this.xmlController.delete(request);
                                 break;
                             case GET:
-                                response = this.xmlController.get(request);
+                                if (request.getResourceParameters().containsKey("uuid")) {
+                                    response = this.xmlController.get(request);
+                                } else {
+                                    response = this.xmlController.list(request);
+                                }
                                 break;
                             case POST:
                                 response = this.xmlController.post(request);
@@ -104,7 +112,11 @@ public class ServiceThread implements Runnable {
                                 response = this.xsdController.delete(request);
                                 break;
                             case GET:
-                                response = this.xsdController.get(request);
+                                if (request.getResourceParameters().containsKey("uuid")) {
+                                    response = this.xsdController.get(request);
+                                } else {
+                                    response = this.xsdController.list(request);
+                                }
                                 break;
                             case POST:
                                 response = this.xsdController.post(request);
@@ -122,7 +134,11 @@ public class ServiceThread implements Runnable {
                                 response = this.xsltController.delete(request);
                                 break;
                             case GET:
-                                response = this.xsltController.get(request);
+                                if (request.getResourceParameters().containsKey("uuid")) {
+                                    response = this.xsltController.get(request);
+                                } else {
+                                    response = this.xsltController.list(request);
+                                }
                                 break;
                             case POST:
                                 response = this.xsltController.post(request);

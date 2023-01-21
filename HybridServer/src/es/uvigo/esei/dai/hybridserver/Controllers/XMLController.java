@@ -13,7 +13,7 @@ import es.uvigo.esei.dai.hybridserver.http.HTTPResponse;
 import es.uvigo.esei.dai.hybridserver.http.HTTPResponseStatus;
 import es.uvigo.esei.dai.hybridserver.xml.XMLUtility;
 
-public class XMLController {
+public class XMLController implements GenericController {
 
     private DaoXML daoXML;
     private DaoXSLT daoXSLT;
@@ -22,6 +22,7 @@ public class XMLController {
     /**
      * @param daoXML
      */
+    
     public XMLController(DaoXML daoXML, DaoXSLT daoXSLT, DaoXSD daoXSD) {
         this.daoXML = daoXML;
         this.daoXSLT = daoXSLT;
@@ -29,15 +30,11 @@ public class XMLController {
 
     }
 
+    @Override
     public HTTPResponse get(HTTPRequest request) {
         HTTPResponse response = new HTTPResponse();
-        try {
-            System.out.println("try");
-            Set<String> keys = request.getResourceParameters().keySet();
 
-            if (!keys.contains("uuid")) {
-                throw new MissedParameterException("Missed UUID");
-            }
+        try {
 
             String uuid = request.getResourceParameters().get("uuid");
             System.out.println("uuid de la request: " + uuid);
@@ -52,15 +49,19 @@ public class XMLController {
             String xml = this.daoXML.get(uuid);// return null if no exist
             System.out.println("Contenido del uuid en la BD: " + xml);
 
+            // Si el content xml de la bd es nulo
             if (xml == null) {
                 // NOT FOUND
                 response.setStatus(HTTPResponseStatus.S404);
+
             } else {
+
                 // Si no existe xslt en la request respondemos el xml
-                if (!keys.contains("xslt")) {
+                if (!request.getResourceParameters().containsKey("xslt")) {
                     response.setContent(xml);
                     response.putParameter("Content-Type", "application/xml");
                     response.setStatus(HTTPResponseStatus.S200);
+
                 } else {
                     // Si la request contiene un xslt que no existe en la base de datos o el xsd que
                     // está asociado a este no existe
@@ -71,66 +72,90 @@ public class XMLController {
 
                         // NOT FOUND
                         response.setStatus(HTTPResponseStatus.S404);
-                    } else {
-                        try {
-                            XMLUtility.validateSchema(xml, xsd);
-                            response.setContent(XMLUtility.xmlToHtml(xml, xslt));
-                            response.putParameter("Content-Type", "text/html");
-                            response.setStatus(HTTPResponseStatus.S200);
 
-                        } catch (Exception e) {
+                    } else {
+                        if (!XMLUtility.validateSchema(xml, xsd)) {
                             // Bad Request XSLT inválido (XSD del XSLT no valida XML solicitado)
                             response.setStatus(HTTPResponseStatus.S400);
+                        } else {
+                            String html = XMLUtility.xmlToHtml(xml, xslt);
+                            if (html != null) {
+                                response.setContent(html);
+                                response.putParameter("Content-Type", "text/html");
+                                response.setStatus(HTTPResponseStatus.S200);
+                            } else {
 
+                                response.setStatus(HTTPResponseStatus.S400);
+                            }
                         }
                     }
                 }
             }
 
-        } catch (MissedParameterException e) {// UUID MISSED
-            System.out.println(e.getMessage());
-
-            response.setContent(this.daoXML.listPages());
-            response.setStatus(HTTPResponseStatus.S200);
-
         } catch (InvalidParameterException e) {
             System.out.println(e.getMessage());
 
+            // BAD REQUEST
             response.setStatus(HTTPResponseStatus.S400);
         }
         return response;
     }
 
+    /**
+     * Resuelve petiones post
+     * 
+     * @param request
+     * @return
+     */
+    @Override
     public HTTPResponse post(HTTPRequest request) {
         String nuevaPaginaUuid;
         HTTPResponse response = new HTTPResponse();
         Set<String> keys = request.getResourceParameters().keySet();
         try {
+            // verificamos que el contenido contenga un elemento XML (pq el mapa puede
+            // contener nulos no puedo usar nullpointerexception)
             if (!keys.contains("xml")) {
                 throw new MissedParameterException("No xml found");
             }
+            // si contiene xml creamos la entrada en la BD
             nuevaPaginaUuid = this.daoXML.addPage(request.getResourceParameters().get("xml"));// NullPointerException
             response.setContent(
                     "<a href=\"xml?uuid=" + nuevaPaginaUuid + "\">" + nuevaPaginaUuid + "</a>");
             response.setStatus(HTTPResponseStatus.S200);
         } catch (MissedParameterException e) {
+            // BAD REQUEST pq la peticion de post xml no contiene xml
             response.setStatus(HTTPResponseStatus.S400);
         }
         return response;
     }
 
+    /**
+     * Resuelve Peticiones DELETE
+     * 
+     * @param request
+     * @return
+     */
+    @Override
     public HTTPResponse delete(HTTPRequest request) {
         HTTPResponse response = new HTTPResponse();
         try {
             this.daoXML.deletePage(request.getResourceParameters().get("uuid"));
             response.setStatus(HTTPResponseStatus.S200);
-        } catch (NullPointerException e) {
-            // En el caso de que la página que se busca no exista
-
-            // Preparamos como contenido la lista de páginas disponibles
-            response.setContent(this.daoXML.listPages());
-            response.setStatus(HTTPResponseStatus.S404);
+        } catch (RuntimeException e) {
+            response.setStatus(HTTPResponseStatus.S500);
         }
+        return response;
+    }
+    
+    @Override
+    public HTTPResponse list(HTTPRequest request) {
+
+        HTTPResponse response = new HTTPResponse();
+
+        response.setContent(this.daoXML.listPages());
+        response.setStatus(HTTPResponseStatus.S200);
+
         return response;
     }
 

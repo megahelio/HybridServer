@@ -11,7 +11,7 @@ import es.uvigo.esei.dai.hybridserver.http.HTTPRequest;
 import es.uvigo.esei.dai.hybridserver.http.HTTPResponse;
 import es.uvigo.esei.dai.hybridserver.http.HTTPResponseStatus;
 
-public class XSLTController {
+public class XSLTController implements GenericController {
     private DaoXSLT daoXSLT;
     private DaoXSD daoXSD;
 
@@ -23,40 +23,32 @@ public class XSLTController {
         this.daoXSD = daoXSD;
     }
 
+    @Override
     public HTTPResponse get(HTTPRequest request) {
         HTTPResponse response = new HTTPResponse();
-        try {
-            System.out.println("try");
-            if (request.getResourceParameters().containsKey("uuid")) {
-                System.out.println("uuid de la request: " + request.getResourceParameters().get("uuid"));
-                if (UUIDgenerator.validate(request.getResourceParameters().get("uuid"))) {
-                    System.out.println("uuid de la request: valida");
 
-                    String content = this.daoXSLT.getContent(request.getResourceParameters().get("uuid"));
-                    System.out.println("Contenido del uuid en la BD: " + content);
-                    if (content == null) {
-                        response.setStatus(HTTPResponseStatus.S404);
-                    } else {
-                        response.setContent(content);
-                        response.putParameter("Content-Type", "application/xml");
-                        response.setStatus(HTTPResponseStatus.S200);
-                    }
-                } else {
-                    System.out.println("uuid de la request: invalida");
-                    response.setStatus(HTTPResponseStatus.S400);
-                }
+        System.out.println("uuid de la request: " + request.getResourceParameters().get("uuid"));
+        if (UUIDgenerator.validate(request.getResourceParameters().get("uuid"))) {
+            System.out.println("uuid de la request: valida");
+
+            String content = this.daoXSLT.getContent(request.getResourceParameters().get("uuid"));
+            System.out.println("Contenido del uuid en la BD: " + content);
+            if (content == null) {
+                response.setStatus(HTTPResponseStatus.S404);
             } else {
-                throw new NullPointerException();
+                response.setContent(content);
+                response.putParameter("Content-Type", "application/xml");
+                response.setStatus(HTTPResponseStatus.S200);
             }
-        } catch (NullPointerException e) {
-            System.out.println("catch");
-
-            response.setContent(this.daoXSLT.listPages());
-            response.setStatus(HTTPResponseStatus.S200);
+        } else {
+            System.out.println("uuid de la request: invalida");
+            response.setStatus(HTTPResponseStatus.S400);
         }
+
         return response;
     }
 
+    @Override
     public HTTPResponse post(HTTPRequest request) {
         String nuevaPaginaUuid;
         HTTPResponse response = new HTTPResponse();
@@ -84,25 +76,30 @@ public class XSLTController {
 
             // BadRequest NO XSD or XSLT
             response.setStatus(HTTPResponseStatus.S400);
-        }catch(InvalidParameterException e){
+        } catch (InvalidParameterException e) {
             // NOT FOUND XSD no exite
             response.setStatus(HTTPResponseStatus.S404);
         }
         return response;
     }
 
+    @Override
     public HTTPResponse delete(HTTPRequest request) {
         HTTPResponse response = new HTTPResponse();
         try {
             this.daoXSLT.deletePage(request.getResourceParameters().get("uuid"));
             response.setStatus(HTTPResponseStatus.S200);
-        } catch (NullPointerException e) {
-            // En el caso de que la página que se busca no exista
-
-            // Preparamos como contenido la lista de páginas disponibles
-            response.setContent(this.daoXSLT.listPages());
-            response.setStatus(HTTPResponseStatus.S404);
+        } catch (RuntimeException e) {
+            response.setStatus(HTTPResponseStatus.S500);
         }
+        return response;
+    }
+
+    @Override
+    public HTTPResponse list(HTTPRequest request) {
+        HTTPResponse response = new HTTPResponse();
+        response.setContent(this.daoXSLT.listPages());
+        response.setStatus(HTTPResponseStatus.S200);
         return response;
     }
 

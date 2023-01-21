@@ -141,7 +141,6 @@ public class ConfigurationContentHandler extends DefaultHandler {
                                                                                        // int
         }
         if (configurationTag && connectionsTag && webServiceTag) {
-            System.out.println("flag: " + new String(ch, start, length));
             configuration.setWebServiceURL(new String(ch, start, length));
         }
         if (configurationTag && connectionsTag && numClientsTag) {
