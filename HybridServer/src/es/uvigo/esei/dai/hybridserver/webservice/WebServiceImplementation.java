@@ -119,4 +119,8 @@ public class WebServiceImplementation
         return null;
     }
 
+    public void close(){
+        
+    }
+
 }

@@ -1,57 +1,61 @@
-/**
- *  HybridServer
- *  Copyright (C) 2022 Miguel Reboiro-Jato
- *  
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *  
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *  
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package es.uvigo.esei.dai.hybridserver.configuration;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class Configuration {
+	private final int DEFAULT_httpPort = 8888;
+	private final int DEFAULT_numClients = 50;
+	private final String DEFAULT_webServiceURL = null;
+	private final String DEFAULT_dbUser = "hsdb";
+	private final String DEFAULT_dbPassword = "hsdbpass";
+	private final String DEFAULT_dbURL = "jdbc:mysql:// localhost:3306/hstestdb";
+
 	private int httpPort;
 	private int numClients;
 	private String webServiceURL;
-	
+
 	private String dbUser;
 	private String dbPassword;
 	private String dbURL;
-	
+
 	private List<ServerConfiguration> servers;
-	
+
+	/**
+	 * Carga un configuration con atributos por defecto
+	 */
 	public Configuration() {
-		this(
-			8888,
-			50,
-			null,
-			"hsdb",
-			"hsdbpass",
-			"jdbc:mysql://localhost:3306/hstestdb",
-			new ArrayList<ServerConfiguration>()
-		);
+
+		this.httpPort = DEFAULT_httpPort;
+		this.numClients = DEFAULT_numClients;
+		this.webServiceURL = DEFAULT_webServiceURL;
+		this.dbUser = DEFAULT_dbUser;
+		this.dbPassword = DEFAULT_dbPassword;
+		this.dbURL = DEFAULT_dbURL;
+		this.servers = new ArrayList<ServerConfiguration>();
 	}
-	
+
+	/**
+	 * Construye un objeto Configuration con los atributos que se pasan como
+	 * argumento
+	 * 
+	 * @param httpPort
+	 * @param numClients
+	 * @param webServiceURL
+	 * @param dbUser
+	 * @param dbPassword
+	 * @param dbURL
+	 * @param servers
+	 */
 	public Configuration(
-		int httpPort,
-		int numClients,
-		String webServiceURL,
-		String dbUser,
-		String dbPassword,
-		String dbURL,
-		List<ServerConfiguration> servers
-	) {
+			int httpPort,
+			int numClients,
+			String webServiceURL,
+			String dbUser,
+			String dbPassword,
+			String dbURL,
+			List<ServerConfiguration> servers) {
 		this.httpPort = httpPort;
 		this.numClients = numClients;
 		this.webServiceURL = webServiceURL;
@@ -61,7 +65,53 @@ public class Configuration {
 		this.servers = servers;
 	}
 
+	/**
+	 * Crea Conficuration a partir de las claves propertis usando claves hardcode,
+	 * en caso de no incluir una clave inserta la configuracion por defecto para ese
+	 * atributo
+	 * 
+	 * @param properties
+	 */
+	public Configuration(Properties properties) {
+		// for (Object key : properties.keySet()) {
+		// System.out.println(key.toString());
+		// }
+		if (properties.containsKey("port")) {
+			this.httpPort = Integer.parseInt(properties.getProperty("port"));
+		} else {
+			this.httpPort = DEFAULT_httpPort;
+		}
 
+		if (properties.containsKey("numClients")) {
+			this.numClients = Integer.parseInt(properties.getProperty("numClients"));
+		} else {
+			this.numClients = DEFAULT_numClients;
+		}
+		if (properties.containsKey("wsURL")) {
+			this.webServiceURL = properties.getProperty("wsURL");
+		} else {
+
+			this.webServiceURL = DEFAULT_webServiceURL;
+		}
+
+		if (properties.containsKey("db.user")) {
+			this.dbUser = properties.getProperty("db.user");
+		} else {
+			this.dbUser = DEFAULT_dbUser;
+		}
+		if (properties.containsKey("db.password")) {
+			this.dbPassword = properties.getProperty("db.password");
+		} else {
+			this.dbPassword = DEFAULT_dbPassword;
+		}
+		if (properties.containsKey("db.url")) {
+			this.dbURL = properties.getProperty("db.url");
+		} else {
+			this.dbURL = DEFAULT_dbURL;
+		}
+
+		this.servers = new ArrayList<>();
+	}
 
 	public int getHttpPort() {
 		return httpPort;
