@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -31,7 +30,7 @@ public class HTTPRequest {
 		BufferedReader readerBuff = new BufferedReader(readerParam);
 
 		// leemos primera linea
-		String[] firstLine = URLDecoder.decode(readerBuff.readLine(), StandardCharsets.UTF_8).split(" ");
+		String[] firstLine = URLDecoder.decode(readerBuff.readLine(), "UTF-8").split(" ");
 
 	
 		// La primera linea debe tener 3 elementos, Método, ResourcePath y versión
@@ -102,7 +101,7 @@ public class HTTPRequest {
 		String aHeader;
 		String[] aSplitedHeader = new String[2];
 		this.headers = new LinkedHashMap<>();
-		aHeader = URLDecoder.decode(readerBuff.readLine(), StandardCharsets.UTF_8);
+		aHeader = URLDecoder.decode(readerBuff.readLine(), "UTF-8");
 		while (aHeader.length() != 0) {
 			if (aHeader.contains(": ")) {
 				aSplitedHeader = aHeader.split(": ");
@@ -114,7 +113,7 @@ public class HTTPRequest {
 			} else {
 				throw new HTTPParseException("Cabecera Inválida (Alguna cabecera no contiene :)");
 			}
-			aHeader = URLDecoder.decode(readerBuff.readLine(), StandardCharsets.UTF_8);
+			aHeader = URLDecoder.decode(readerBuff.readLine(), "UTF-8");
 		}
 
 		// Sección Contenido
@@ -126,7 +125,7 @@ public class HTTPRequest {
 			for (char character : contentChars) {
 				this.content = this.content.concat(Character.toString(character));
 			}
-			this.content = URLDecoder.decode(this.content, StandardCharsets.UTF_8);
+			this.content = URLDecoder.decode(this.content, "UTF-8");
 			
 		}
 
