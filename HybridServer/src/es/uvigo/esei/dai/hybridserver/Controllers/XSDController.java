@@ -1,7 +1,15 @@
 package es.uvigo.esei.dai.hybridserver.controllers;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
 import java.util.Set;
 
+import javax.xml.namespace.QName;
+import javax.xml.ws.Service;
+
+import es.uvigo.esei.dai.hybridserver.HybridServerService;
+import es.uvigo.esei.dai.hybridserver.configuration.ServerConfiguration;
 import es.uvigo.esei.dai.hybridserver.controllers.exceptions.MissedParameterException;
 import es.uvigo.esei.dai.hybridserver.dao.DaoXSD;
 import es.uvigo.esei.dai.hybridserver.dao.UUIDgenerator;
@@ -11,33 +19,70 @@ import es.uvigo.esei.dai.hybridserver.http.HTTPResponseStatus;
 
 public class XSDController implements GenericController {
     private DaoXSD dao;
+    private List<ServerConfiguration> servers;
 
     /**
      * @param dao
      */
-    public XSDController(DaoXSD dao) {
+    public XSDController(DaoXSD dao, List<ServerConfiguration> servers) {
         this.dao = dao;
+        this.servers = servers;
     }
 
     @Override
     public HTTPResponse get(HTTPRequest request) {
         HTTPResponse response = new HTTPResponse();
 
-        System.out.println("uuid de la request: " + request.getResourceParameters().get("uuid"));
+      //  System.out.println("uuid de la request: " + request.getResourceParameters().get("uuid"));
         if (UUIDgenerator.validate(request.getResourceParameters().get("uuid"))) {
-            System.out.println("uuid de la request: valida");
+          //  System.out.println("uuid de la request: valida");
 
             String content = this.dao.get(request.getResourceParameters().get("uuid"));
-            System.out.println("Contenido del uuid en la BD: " + content);
+          //  System.out.println("Contenido del uuid en la BD: " + content);
             if (content == null) {
-                response.setStatus(HTTPResponseStatus.S404);
+                try {
+                    Boolean foundXSD = false;
+                    int i = 0;
+                    while (!foundXSD && i < servers.size()) {
+                        if (!servers.get(i).getName().equals("Down Server")) {
+
+                            URL url;
+                            // NOTA: Si ServerConfiguration.getName() Devolviese una URL no Saltaría la
+                            // excepcion y se controlaría la formacion de la url en la propia clase de
+                            // ServerConfiguration
+                            url = new URL(servers.get(i).getWsdl());// Throws
+                            // MalformedURLException
+
+                            QName name = new QName(servers.get(i).getNamespace(),
+                                    servers.get(i).getService() + "ImplService");
+                            Service service = Service.create(url, name);
+                            HybridServerService ws = service.getPort(HybridServerService.class);
+                            content = ws.getXSD(request.getResourceParameters().get("uuid"));
+                            if (content != null) {
+                                foundXSD = true;
+                            }
+                        }
+                        i++;
+                    }
+                    if (foundXSD) {
+                        response.setContent(content);
+                        response.putParameter("Content-Type", "application/xml");
+                        response.setStatus(HTTPResponseStatus.S200);
+                    } else {
+                        // NOT FOUND
+                        response.setStatus(HTTPResponseStatus.S404);
+                    }
+                } catch (MalformedURLException e) {
+                  //  System.out.println("URL mal formada:  Saltando al siguiente servidor de la lista.");
+                }
+
             } else {
                 response.setContent(content);
                 response.putParameter("Content-Type", "application/xml");
                 response.setStatus(HTTPResponseStatus.S200);
             }
         } else {
-            System.out.println("uuid de la request: invalida");
+          //  System.out.println("uuid de la request: invalida");
             response.setStatus(HTTPResponseStatus.S400);
         }
 
@@ -78,7 +123,36 @@ public class XSDController implements GenericController {
     @Override
     public HTTPResponse list(HTTPRequest request) {
         HTTPResponse response = new HTTPResponse();
-        response.setContent(this.dao.listPages());
+        String fullList = "<h1>LocalHost</h1>\n";
+        fullList = fullList.concat(this.dao.listPages());
+
+        for (ServerConfiguration server : this.servers) {
+
+            if (!server.getName().equals("Down Server")) {
+
+                URL url;
+                // NOTA: Si ServerConfiguration.getName() Devolviese una URL no Saltaría la
+                // excepcion y se controlaría la formacion de la url en la propia clase de
+                // ServerConfiguration
+                try {
+                    url = new URL(server.getWsdl());
+
+                    QName name = new QName(server.getNamespace(),
+                            server.getService() + "ImplService");
+
+                    Service service = Service.create(url, name);
+
+                    HybridServerService ws = service.getPort(HybridServerService.class);
+                    fullList = fullList.concat("<h1>" + server.getName() + "</h1>\n");
+                    fullList = fullList.concat(ws.listPagesXSD());
+                } catch (MalformedURLException e) {
+                    throw new RuntimeException("URL MALFORMED, server skipped");
+                }
+            }
+        }
+
+        response.setContent(fullList);
+      //  System.out.println("ResponseListBody: " + response.getContent());
         response.setStatus(HTTPResponseStatus.S200);
         return response;
     }

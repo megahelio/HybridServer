@@ -27,12 +27,12 @@ import java.util.concurrent.TimeUnit;
 
 import javax.xml.ws.Endpoint;
 
+import es.uvigo.esei.dai.hybridserver.HybridServerServiceImpl;
 import es.uvigo.esei.dai.hybridserver.configuration.Configuration;
 import es.uvigo.esei.dai.hybridserver.dao.DaoHTML;
 import es.uvigo.esei.dai.hybridserver.dao.DaoXML;
 import es.uvigo.esei.dai.hybridserver.dao.DaoXSD;
 import es.uvigo.esei.dai.hybridserver.dao.DaoXSLT;
-import es.uvigo.esei.dai.hybridserver.webservice.WebServiceImplementation;
 
 public class HybridServer {
 	private static int count = 0;
@@ -46,6 +46,8 @@ public class HybridServer {
 	private DaoHTML daoHTML;
 	private DaoXSD daoXSD;
 	private DaoXSLT daoXSLT;
+
+	private Endpoint endpoint;
 
 	public HybridServer() {
 		System.out.println("constructor vacío");
@@ -62,6 +64,8 @@ public class HybridServer {
 
 		this.daoXSLT = new DaoXSLT(this.configuration.getDbURL(), this.configuration.getDbUser(),
 				this.configuration.getDbPassword());
+
+		this.endpoint = null;
 
 	}
 
@@ -81,6 +85,7 @@ public class HybridServer {
 
 		this.daoXSLT = new DaoXSLT(this.configuration.getDbURL(), this.configuration.getDbUser(),
 				this.configuration.getDbPassword());
+		this.endpoint = null;
 	}
 
 	public HybridServer(Configuration configuration) {
@@ -98,6 +103,7 @@ public class HybridServer {
 
 		this.daoXSLT = new DaoXSLT(this.configuration.getDbURL(), this.configuration.getDbUser(),
 				this.configuration.getDbPassword());
+		this.endpoint = null;
 
 	}
 
@@ -107,24 +113,23 @@ public class HybridServer {
 	}
 
 	public void start() {
-		System.out.println("HybridServer.Start");
+		System.out.println("HybridServer.Start: ");
 		if (this.configuration.getWebServiceURL() != null) {
 			System.out.println("this.configuration.getWebServiceURL(): " + this.configuration.getWebServiceURL());
 			System.out.println("DAO INFO: " + this.configuration.getDbURL() + " " + this.configuration.getDbUser() + " "
 					+
 					this.configuration.getDbPassword());
-			Endpoint endpoint = Endpoint.publish(this.configuration.getWebServiceURL(),
-					new WebServiceImplementation(daoHTML, daoXML, daoXSD, daoXSLT));
-
+			endpoint = Endpoint.publish(this.configuration.getWebServiceURL(),
+					new HybridServerServiceImpl(this.daoHTML, this.daoXML, this.daoXSD, this.daoXSLT));
 		}
 		this.serverThread = new Thread() {
 			@Override
 			public void run() {
+				System.out.println("configuration.getHttpPort(): " + configuration.getHttpPort());
 				try (final ServerSocket serverSocket = new ServerSocket(configuration.getHttpPort())) {
 					// try (final ServerSocket serverSocket = new
 					// ServerSocket(Integer.parseInt(prop.getProperty("port")))) {
 					threadPool = Executors.newFixedThreadPool(configuration.getNumClients());
-					System.out.println("flagB");
 					// threadPool =
 					// Executors.newFixedThreadPool(Integer.parseInt(prop.getProperty("numClients")));
 					while (true) {
@@ -138,8 +143,8 @@ public class HybridServer {
 
 						if (stop)
 							break;
-						ServiceThread thread = new ServiceThread(socket, daoHTML, daoXML, daoXSD, daoXSLT);
-						// ServiceThreadTester thread = new ServiceThreadTester(socket, dao);
+						ServiceThread thread = new ServiceThread(socket, daoHTML, daoXML, daoXSD, daoXSLT,
+								configuration);
 
 						System.out.println("HybridServer.SocketAccept.Execute");
 
@@ -181,6 +186,9 @@ public class HybridServer {
 			threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+		}
+		if (endpoint != null) {
+			endpoint.stop();
 		}
 	}
 }

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import es.uvigo.esei.dai.hybridserver.configuration.Configuration;
 import es.uvigo.esei.dai.hybridserver.controllers.HTMLController;
 import es.uvigo.esei.dai.hybridserver.controllers.XMLController;
 import es.uvigo.esei.dai.hybridserver.controllers.XSDController;
@@ -20,7 +21,6 @@ import es.uvigo.esei.dai.hybridserver.http.HTTPResponseStatus;
 import es.uvigo.esei.dai.hybridserver.http.exceptions.HTTPParseException;
 
 public class ServiceThread implements Runnable {
-    private static int count = 0;
     private Socket socketVar;
     private HTTPRequest request;
     private HTTPResponse response;
@@ -30,34 +30,36 @@ public class ServiceThread implements Runnable {
     private XSDController xsdController;
     private XSLTController xsltController;
 
-    public ServiceThread(Socket socketparam, DaoHTML daoHTML, DaoXML daoXML, DaoXSD daoXSD, DaoXSLT daoXSLT) {
-        System.out.println("Creando un ServiceThread " + (++count) + ": " + socketparam.toString());
+    public ServiceThread(Socket socketparam, DaoHTML daoHTML, DaoXML daoXML, DaoXSD daoXSD, DaoXSLT daoXSLT,
+            Configuration configuration) {
+        // System.out.println("Creando un ServiceThread " + (++count) + ": " +
+        // socketparam.toString());
         this.socketVar = socketparam;
         this.response = new HTTPResponse();
-        this.htmlController = new HTMLController(daoHTML);
-        this.xmlController = new XMLController(daoXML, daoXSLT, daoXSD);
-        this.xsdController = new XSDController(daoXSD);
-        this.xsltController = new XSLTController(daoXSLT, daoXSD);
+        this.htmlController = new HTMLController(daoHTML, configuration.getServers());
+        this.xmlController = new XMLController(daoXML, daoXSLT, daoXSD, configuration.getServers());
+        this.xsdController = new XSDController(daoXSD, configuration.getServers());
+        this.xsltController = new XSLTController(daoXSLT, daoXSD, configuration.getServers());
     }
 
     @Override
     public void run() {
         BufferedReader inputReader;
-        System.out.println("ServiceThread Run " + count + " : " + this.socketVar.toString());
+        // System.out.println("ServiceThread Run " + count + " : " +
+        // this.socketVar.toString());
         try (Socket socket = this.socketVar) {
 
-            System.out.println("ServiceThread Run" + count + " : " +
-                    socket.toString());
+            // System.out.println("ServiceThread Run" + count + " : " +
             // System.out.println(socket.getInputStream().toString());
             inputReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             // request inicializado presuntamente
-            System.out.println("Input Reader");
+            // System.out.println("Input Reader");
 
             try {
                 request = new HTTPRequest(inputReader);// THROWS HTTPParseException
-                System.out.println("Request ToString: " + request.toString());
-                System.out.println("Parameters :" + request.getResourceParameters());
-                System.out.println("ResourceName: " + request.getResourceName());
+                // System.out.println("Request ToString: " + request.toString());
+                // System.out.println("Parameters :" + request.getResourceParameters());
+                // System.out.println("ResourceName: " + request.getResourceName());
                 // System.out.println("Method: " + request.getMethod());
 
                 switch (request.getResourceName()) {
@@ -68,6 +70,7 @@ public class ServiceThread implements Runnable {
                                 response = this.htmlController.delete(request);
                                 break;
                             case GET:
+
                                 if (request.getResourceParameters().containsKey("uuid")) {
                                     response = this.htmlController.get(request);
                                 } else {
@@ -78,7 +81,7 @@ public class ServiceThread implements Runnable {
                                 response = this.htmlController.post(request);
                                 break;
                             default:
-                                System.out.println("Case DEFAULT");
+                                // System.out.println("Case DEFAULT");
                                 // CASO UNIMPLEMENTED METHOD
                                 response.setStatus(HTTPResponseStatus.S501);
                                 break;
@@ -100,7 +103,7 @@ public class ServiceThread implements Runnable {
                                 response = this.xmlController.post(request);
                                 break;
                             default:
-                                System.out.println("Case DEFAULT");
+                                // System.out.println("Case DEFAULT");
                                 // CASO UNIMPLEMENTED METHOD
                                 response.setStatus(HTTPResponseStatus.S501);
                                 break;
@@ -122,7 +125,7 @@ public class ServiceThread implements Runnable {
                                 response = this.xsdController.post(request);
                                 break;
                             default:
-                                System.out.println("Case DEFAULT");
+                                // System.out.println("Case DEFAULT");
                                 // CASO UNIMPLEMENTED METHOD
                                 response.setStatus(HTTPResponseStatus.S501);
                                 break;
@@ -144,7 +147,7 @@ public class ServiceThread implements Runnable {
                                 response = this.xsltController.post(request);
                                 break;
                             default:
-                                System.out.println("Case DEFAULT");
+                                // System.out.println("Case DEFAULT");
                                 // CASO UNIMPLEMENTED METHOD
                                 response.setStatus(HTTPResponseStatus.S501);
                                 break;
@@ -153,26 +156,26 @@ public class ServiceThread implements Runnable {
                     case "":
                         if (request.getMethod() == HTTPRequestMethod.GET
                                 && !request.getHeaderParameters().containsKey("uuid")) {
-                            System.out.println("Welcome Detected");
+                            // System.out.println("Welcome Detected");
                             response.setContent("Hybrid Server");
                             response.setStatus(HTTPResponseStatus.S200);
                             break;
                         }
 
                     default:
-                        System.out.println("Case DEFAULT");
+                        // System.out.println("Case DEFAULT");
                         // CASO UNIMPLEMENTED METHOD
                         response.setStatus(HTTPResponseStatus.S400);
                         break;
                 }
 
             } catch (HTTPParseException e) {
-                System.out.println("Throws Parse Exception");
+                // System.out.println("Throws Parse Exception");
 
                 response.setStatus(HTTPResponseStatus.S400);
             } finally {
-                System.out.println("RESPONSE TOSTRING:");
-                System.out.println(response.toString());
+                // System.out.println("RESPONSE TOSTRING:");
+                // System.out.println(response.toString());
                 socket.getOutputStream().write(response.toString().getBytes(), 0,
                         response.toString().getBytes().length);
             }

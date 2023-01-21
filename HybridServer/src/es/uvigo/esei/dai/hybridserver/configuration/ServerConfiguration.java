@@ -23,17 +23,16 @@ public class ServerConfiguration {
 	private String namespace;
 	private String service;
 	private String httpAddress;
-	
+
 	public ServerConfiguration() {
 	}
-	
+
 	public ServerConfiguration(
-		String name,
-		String wsdl,
-		String namespace,
-		String service,
-		String httpAddress
-	) {
+			String name,
+			String wsdl,
+			String namespace,
+			String service,
+			String httpAddress) {
 		this.name = name;
 		this.wsdl = wsdl;
 		this.namespace = namespace;
@@ -79,5 +78,11 @@ public class ServerConfiguration {
 
 	public void setHttpAddress(String httpAddress) {
 		this.httpAddress = httpAddress;
+	}
+
+	@Override
+	public String toString() {
+		return "\nname: " + this.name + "\nwsdl: " + this.wsdl + "\nnamespace: " + namespace + "\nservice: " + service
+				+ "\nhttpAddress: " + httpAddress + "\n";
 	}
 }

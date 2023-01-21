@@ -41,9 +41,10 @@ public class ConfigurationContentHandler extends DefaultHandler {
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-        System.out.println(
-                "\nStartElement: \n" + "uri: " + uri + "\n" + "localName: " + localName + "\n" + "qName: " + qName
-                        + "\nAtributes: " + attributes.getLength());
+        // System.out.println(
+        // "\nStartElement: \n" + "uri: " + uri + "\n" + "localName: " + localName +
+        // "\n" + "qName: " + qName
+        // + "\nAtributes: " + attributes.getLength());
         if (qName.equals("configuration")) {
             configurationTag = true;
         }
@@ -90,8 +91,9 @@ public class ConfigurationContentHandler extends DefaultHandler {
 
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
-        System.out.println("\nEndElement: \n" + "uri: " + uri + "\n" + "localName: " + localName + "\n" + "qName: "
-                + qName);
+        // System.out.println("\nEndElement: \n" + "uri: " + uri + "\n" + "localName: "
+        // + localName + "\n" + "qName: "
+        // + qName);
         if (qName.equals("configuration")) {
             configurationTag = false;
         }
@@ -130,11 +132,11 @@ public class ConfigurationContentHandler extends DefaultHandler {
 
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
-        System.out.println("\nCharacter: ");
+        // System.out.println("\nCharacter: ");
 
-        for (int i = start; i < start + length; i++) {
-            System.out.print(ch[i]);
-        }
+        // for (int i = start; i < start + length; i++) {
+        // System.out.print(ch[i]);
+        // }
         if (configurationTag && connectionsTag && httpTag) {
             configuration.setHttpPort(Integer.parseInt(new String(ch, start, length)));// redundante parsear a String en
                                                                                        // vez de parsear directamente a
@@ -162,18 +164,18 @@ public class ConfigurationContentHandler extends DefaultHandler {
             configuration.setDbURL(new String(ch, start, length));
         }
 
-        System.out.println("\nstart: " + start + "\n" + "length: " + length);
+        // System.out.println("\nstart: " + start + "\n" + "length: " + length);
 
     }
 
     @Override
     public void startDocument() throws SAXException {
-        System.out.println("\nStartDocument: ");
+        // System.out.println("\nStartDocument: ");
     }
 
     @Override
     public void endDocument() throws SAXException {
-        System.out.println("\nStopDocument: ");
+        // System.out.println("\nStopDocument: ");
     }
 
     public Configuration getConfiguration() {

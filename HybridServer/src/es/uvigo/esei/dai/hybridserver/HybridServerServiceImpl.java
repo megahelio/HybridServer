@@ -1,4 +1,4 @@
-package es.uvigo.esei.dai.hybridserver.webservice;
+package es.uvigo.esei.dai.hybridserver;
 
 import javax.jws.WebService;
 
@@ -7,46 +7,45 @@ import es.uvigo.esei.dai.hybridserver.dao.DaoXML;
 import es.uvigo.esei.dai.hybridserver.dao.DaoXSD;
 import es.uvigo.esei.dai.hybridserver.dao.DaoXSLT;
 
-@WebService(endpointInterface = "com.example.dai.TimeService")
-public class WebServiceImplementation
-        implements WebServiceInterface {
+@WebService(endpointInterface = "es.uvigo.esei.dai.hybridserver.HybridServerService")
+public class HybridServerServiceImpl implements HybridServerService {
 
     DaoHTML daoHTML;
     DaoXML daoXML;
     DaoXSD daoXSD;
     DaoXSLT daoXSLT;
 
-    public WebServiceImplementation(DaoHTML daoHTML, DaoXML daoXML, DaoXSD daoXSD, DaoXSLT daoXSLT) {
+    public HybridServerServiceImpl(DaoHTML daoHTML, DaoXML daoXML, DaoXSD daoXSD, DaoXSLT daoXSLT) {
         this.daoHTML = daoHTML;
         this.daoXML = daoXML;
         this.daoXSD = daoXSD;
         this.daoXSLT = daoXSLT;
     }
 
+    // HTML
     @Override
     public String addPageHTML(String content) {
-        // TODO Auto-generated method stub
-        return null;
+
+        return daoHTML.addPage(content);
     }
 
     @Override
     public void deletePageHTML(String id) {
-        // TODO Auto-generated method stub
-
+        daoHTML.deletePage(id);
     }
 
     @Override
     public String listPagesHTML() {
-        // TODO Auto-generated method stub
-        return null;
+
+        return daoHTML.listPages();
     }
 
     @Override
     public String getHTML(String id) {
-        // TODO Auto-generated method stub
-        return null;
+        return daoHTML.get(id);
     }
 
+    // XML
     @Override
     public String addPageXML(String content) {
         // TODO Auto-generated method stub
@@ -61,16 +60,15 @@ public class WebServiceImplementation
 
     @Override
     public String listPagesXML() {
-        // TODO Auto-generated method stub
-        return null;
+        return daoXML.listPages();
     }
 
     @Override
     public String getXML(String id) {
-        // TODO Auto-generated method stub
-        return null;
+        return daoXML.get(id);
     }
 
+    // XSD
     @Override
     public String addPageXSD(String content) {
         // TODO Auto-generated method stub
@@ -85,16 +83,15 @@ public class WebServiceImplementation
 
     @Override
     public String listPagesXSD() {
-        // TODO Auto-generated method stub
-        return null;
+        return daoXSD.listPages();
     }
 
     @Override
     public String getXSD(String id) {
-        // TODO Auto-generated method stub
-        return null;
+        return daoXSD.get(id);
     }
 
+    // XSLT
     @Override
     public String addPageXSLT(String content) {
         // TODO Auto-generated method stub
@@ -103,24 +100,27 @@ public class WebServiceImplementation
 
     @Override
     public void deletePageXSLT(String id) {
-        // TODO Auto-generated method stub
-
+        daoXSLT.deletePage(id);
     }
 
     @Override
     public String listPagesXSLT() {
-        // TODO Auto-generated method stub
-        return null;
+
+        return daoXSLT.listPages();
     }
 
     @Override
     public String getXSLT(String id) {
-        // TODO Auto-generated method stub
-        return null;
+        return daoXSLT.getContent(id);
     }
 
-    public void close(){
-        
+    @Override
+    public String getXSDofaXSLT(String id) {
+        return daoXSLT.getXSD(id);
+    }
+
+    public void close() {
+
     }
 
 }

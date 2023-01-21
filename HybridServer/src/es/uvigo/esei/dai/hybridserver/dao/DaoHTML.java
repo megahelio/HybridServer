@@ -76,7 +76,7 @@ public class DaoHTML implements DaoInterface {
 				StringBuilder toRet = new StringBuilder();
 
 				for (String i : html) {
-					toRet.append(i + "\n");
+					toRet.append("<a href=\"html?uuid=" + i + "\">" + i + "</a>" + "\n");
 				}
 
 				return toRet.toString();

@@ -1,13 +1,11 @@
-package es.uvigo.esei.dai.hybridserver.webservice;
+package es.uvigo.esei.dai.hybridserver;
 
 import javax.jws.WebMethod;
 import javax.jws.WebService;
-import javax.jws.soap.SOAPBinding;
 
 //Se definen todas la acciones que se pueden hacer en cada servidor individualmente
 @WebService
-@SOAPBinding(style = SOAPBinding.Style.RPC)
-public interface WebServiceInterface {
+public interface HybridServerService {
     // HTML
     @WebMethod
     public String addPageHTML(String content);
@@ -59,5 +57,8 @@ public interface WebServiceInterface {
 
     @WebMethod
     public String getXSLT(String id);
+
+    @WebMethod
+    public String getXSDofaXSLT(String id);
 
 }

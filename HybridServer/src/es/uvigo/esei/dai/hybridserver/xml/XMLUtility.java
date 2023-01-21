@@ -99,7 +99,7 @@ public class XMLUtility {
             File xml, String schemaPath, ContentHandler handler)
             throws ParserConfigurationException, SAXException, IOException {
         String xmlPath = xml.getPath().toString();
-        System.out.println(xmlPath + "   " + schemaPath);
+      //  System.out.println(xmlPath + "   " + schemaPath);
         // Construcción del schema
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema schema = schemaFactory.newSchema(new File(schemaPath));

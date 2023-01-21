@@ -26,22 +26,29 @@ public class XMLConfigurationLoader {
 		ConfigurationContentHandler handler = new ConfigurationContentHandler();
 		XMLUtility.parseAndValidateWithExternalXSD(xmlFile, "configuration.xsd",
 				handler);
-		Configuration configuration = handler.getConfiguration();
-		System.out.println(configuration.getHttpPort());
-		System.out.println("service: "+configuration.getWebServiceURL());
-		System.out.println(configuration.getNumClients());
-		System.out.println(configuration.getDbUser());
-		System.out.println(configuration.getDbPassword());
-		System.out.println(configuration.getDbURL());
-		for (ServerConfiguration server : configuration.getServers()) {
+		// Configuration configuration = handler.getConfiguration();
+		// System.out.println("configuration.getHttpPort(): " +
+		// configuration.getHttpPort());
+		// System.out.println("configuration.getWebServiceURL(): " +
+		// configuration.getWebServiceURL());
+		// System.out.println("configuration.getNumClients(): " +
+		// configuration.getNumClients());
+		// System.out.println("configuration.getDbUser(): " +
+		// configuration.getDbUser());
+		// System.out.println("configuration.getDbPassword(): " +
+		// configuration.getDbPassword());
+		// System.out.println("configuration.getDbURL(): " +
+		// configuration.getDbURL()+"\n");
+		// for (ServerConfiguration server : configuration.getServers()) {
 
-			System.out.println(server.getName());
-			System.out.println(server.getWsdl());
-			System.out.println(server.getNamespace());
-			System.out.println(server.getService());
-			System.out.println(server.getHttpAddress());
+		// System.out.println("server.getName(): " + server.getName());
+		// System.out.println("server.getWsdl(): " + server.getWsdl());
+		// System.out.println("server.getNamespace(): " + server.getNamespace());
+		// System.out.println("server.getService(): " + server.getService());
+		// System.out.println("server.getHttpAddress(): " +
+		// server.getHttpAddress()+"\n");
 
-		}
+		// }
 		return handler.getConfiguration();
 	}
 
