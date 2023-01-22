@@ -26,11 +26,6 @@ public class DaoXML implements DaoInterface {
 		this.password = password;
 	}
 
-	private Connection getConnection() throws SQLException {
-		return DriverManager.getConnection(this.url, this.user, this.password);
-
-	}
-
 	@Override
 	public String addPage(String content) {
 		String uuid = UUIDgenerator.generate();

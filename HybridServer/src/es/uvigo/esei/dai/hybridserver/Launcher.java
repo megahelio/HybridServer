@@ -1,10 +1,13 @@
 package es.uvigo.esei.dai.hybridserver;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Properties;
 
+import es.uvigo.esei.dai.hybridserver.configuration.Configuration;
+import es.uvigo.esei.dai.hybridserver.configuration.XMLConfigurationLoader;
 import es.uvigo.esei.dai.hybridserver.core.HybridServer;
 
 public class Launcher {
@@ -15,7 +18,20 @@ public class Launcher {
 			HybridServer server = new HybridServer();
 			server.start();
 
-		} else if (args.length == 1) {
+			// cargar fichero .xml
+		} else if (args.length == 1 && args[0].substring(args[0].length() - 3).equals("xml")) {
+			Configuration configuration;
+			try {
+				configuration = XMLConfigurationLoader.load(new File(args[0]));
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+
+			HybridServer server = new HybridServer(configuration);
+			server.start();
+
+			// Cargar fichero .prop
+		} else if (args.length == 1 && args[0].substring(args[0].length() - 4).equals("prop")) {
 
 			Properties properties = new Properties();
 
@@ -38,17 +54,9 @@ public class Launcher {
 
 		} else {
 
-			System.err.println("No se aceptan más de 1 argumento.");
+			System.err.println("No se aceptan más de 1 argumento .xml o .prop");
 
 		}
-
-		// Para parar el servidor
-		// System.out.println("Press Q to exit");
-		// try (Scanner inputScanner = new Scanner(System.in)) {
-		// while (inputScanner.nextLine().toUpperCase().charAt(0) != 'Q');
-		// }
-
-		// server.stop();
 
 	}
 }
