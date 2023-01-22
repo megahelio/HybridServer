@@ -26,22 +26,20 @@ public class DaoXSLT {
 		this.password = password;
 	}
 
-	private Connection getConnection() throws SQLException {
-		return DriverManager.getConnection(this.url, this.user, this.password);
-
-	}
 
 	public String addPage(String content, String xsd) {
 		String uuid = UUIDgenerator.generate();
-		try (PreparedStatement statement = getConnection()
-				.prepareStatement("INSERT INTO XSLT (uuid, content, xsd) VALUES (?, ?, ?)",
-						Statement.RETURN_GENERATED_KEYS)) {
-			statement.setString(1, uuid);
-			statement.setString(2, content);
-			statement.setString(3, xsd);
+		try (Connection connection = DriverManager.getConnection(this.url, this.user, this.password)) {
+			try (PreparedStatement statement = connection
+					.prepareStatement("INSERT INTO XSLT (uuid, content, xsd) VALUES (?, ?, ?)",
+							Statement.RETURN_GENERATED_KEYS)) {
+				statement.setString(1, uuid);
+				statement.setString(2, content);
+				statement.setString(3, xsd);
 
-			if (statement.executeUpdate() != 1) {
-				throw new SQLException("Error al insertar");
+				if (statement.executeUpdate() != 1) {
+					throw new SQLException("Error al insertar");
+				}
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
@@ -52,11 +50,13 @@ public class DaoXSLT {
 
 	public void deletePage(String id) {
 
-		try (PreparedStatement statement = getConnection().prepareStatement("DELETE FROM xslt WHERE uuid=?")) {
-			statement.setString(1, id);
+		try (Connection connection = DriverManager.getConnection(this.url, this.user, this.password)) {
+			try (PreparedStatement statement = connection.prepareStatement("DELETE FROM xslt WHERE uuid=?")) {
+				statement.setString(1, id);
 
-			if (statement.executeUpdate() != 1)
-				throw new SQLException("Error al eliminar");
+				if (statement.executeUpdate() != 1)
+					throw new SQLException("Error al eliminar");
+			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -64,70 +64,82 @@ public class DaoXSLT {
 	}
 
 	public String listPages() {
-		try (Statement statement = getConnection().createStatement()) {
-			try (ResultSet result = statement.executeQuery("SELECT * FROM xslt")) {
-				final List<String> xslt = new ArrayList<>();
+		StringBuilder toRet = new StringBuilder();
+		try (Connection connection = DriverManager.getConnection(this.url, this.user, this.password)) {
+			try (Statement statement = connection.createStatement()) {
+				try (ResultSet result = statement.executeQuery("SELECT * FROM xslt")) {
+					final List<String> xslt = new ArrayList<>();
 
-				while (result.next()) {
-					xslt.add(result.getString("uuid"));
+					while (result.next()) {
+						xslt.add(result.getString("uuid"));
+					}
+
+					for (String i : xslt) {
+						toRet.append(i + "\n");
+					}
+
 				}
-
-				StringBuilder toRet = new StringBuilder();
-
-				for (String i : xslt) {
-					toRet.append(i + "\n");
-				}
-
-				return toRet.toString();
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
+		return toRet.toString();
 	}
 
 	public String getContent(String id) {
 		// no tiene mucho sentido que te traigas toda la tabla (*) para solo necesitar
 		// la columna content
-		try (PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM xslt WHERE uuid=?")) {
-			statement.setString(1, id);
+		String toret = null;
 
-			try (ResultSet result = statement.executeQuery()) {
-				if (result.next()) {
-					return result.getString("content");
-				} else
-					return null;
+		try (Connection connection = DriverManager.getConnection(this.url, this.user, this.password)) {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM xslt WHERE uuid=?")) {
+				statement.setString(1, id);
+
+				try (ResultSet result = statement.executeQuery()) {
+					if (result.next()) {
+						toret = result.getString("content");
+					}
+				}
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
+		return toret;
 	}
 
 	public String getXSD(String id) {
-		//no tiene mucho sentido que te traigas toda la tabla (*) para solo necesitar la columna xsd
-		try (PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM xslt WHERE uuid=?")) {
-			statement.setString(1, id);
+		// no tiene mucho sentido que te traigas toda la tabla (*) para solo necesitar
+		// la columna xsd
+		String toret = null;
+		try (Connection connection = DriverManager.getConnection(this.url, this.user, this.password)) {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM xslt WHERE uuid=?")) {
+				statement.setString(1, id);
 
-			try (ResultSet result = statement.executeQuery()) {
-				if (result.next()) {
-					return result.getString("xsd");
-				} else
-					return null;
+				try (ResultSet result = statement.executeQuery()) {
+					if (result.next()) {
+						toret = result.getString("xsd");
+					}
+				}
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
+		return toret;
 	}
 
 	public boolean exist(String id) {
-		try (PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM xslt WHERE uuid=?")) {
-			statement.setString(1, id);
-			try (ResultSet result = statement.executeQuery()) {
-				return result.next();
-
+		boolean toret = false;
+		try (Connection connection = DriverManager.getConnection(this.url, this.user, this.password)) {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM xslt WHERE uuid=?")) {
+				statement.setString(1, id);
+				try (ResultSet result = statement.executeQuery()) {
+					toret = result.next();
+				}
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
+		return toret;
 
 	}
 }

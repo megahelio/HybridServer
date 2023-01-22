@@ -48,6 +48,7 @@ public class HybridServer {
 	private DaoXSLT daoXSLT;
 
 	private Endpoint endpoint;
+	private HybridServerServiceImpl hybridServerServiceImpl;
 
 	public HybridServer() {
 		System.out.println("constructor vacío");
@@ -66,6 +67,9 @@ public class HybridServer {
 				this.configuration.getDbPassword());
 
 		this.endpoint = null;
+
+		this.hybridServerServiceImpl = new HybridServerServiceImpl(this.daoHTML, this.daoXML, this.daoXSD,
+				this.daoXSLT);
 
 	}
 
@@ -86,6 +90,8 @@ public class HybridServer {
 		this.daoXSLT = new DaoXSLT(this.configuration.getDbURL(), this.configuration.getDbUser(),
 				this.configuration.getDbPassword());
 		this.endpoint = null;
+		this.hybridServerServiceImpl = new HybridServerServiceImpl(this.daoHTML, this.daoXML, this.daoXSD,
+				this.daoXSLT);
 	}
 
 	public HybridServer(Configuration configuration) {
@@ -104,6 +110,8 @@ public class HybridServer {
 		this.daoXSLT = new DaoXSLT(this.configuration.getDbURL(), this.configuration.getDbUser(),
 				this.configuration.getDbPassword());
 		this.endpoint = null;
+		this.hybridServerServiceImpl = new HybridServerServiceImpl(this.daoHTML, this.daoXML, this.daoXSD,
+				this.daoXSLT);
 
 	}
 
@@ -120,7 +128,7 @@ public class HybridServer {
 					+
 					this.configuration.getDbPassword());
 			endpoint = Endpoint.publish(this.configuration.getWebServiceURL(),
-					new HybridServerServiceImpl(this.daoHTML, this.daoXML, this.daoXSD, this.daoXSLT));
+					hybridServerServiceImpl);
 		}
 		this.serverThread = new Thread() {
 			@Override
@@ -190,5 +198,7 @@ public class HybridServer {
 		if (endpoint != null) {
 			endpoint.stop();
 		}
+		hybridServerServiceImpl.close();
+
 	}
 }
