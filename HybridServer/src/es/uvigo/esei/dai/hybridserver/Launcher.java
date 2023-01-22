@@ -8,7 +8,6 @@ import java.util.Properties;
 
 import es.uvigo.esei.dai.hybridserver.configuration.Configuration;
 import es.uvigo.esei.dai.hybridserver.configuration.XMLConfigurationLoader;
-import es.uvigo.esei.dai.hybridserver.core.HybridServer;
 
 public class Launcher {
 

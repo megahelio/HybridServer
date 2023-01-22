@@ -15,7 +15,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package es.uvigo.esei.dai.hybridserver.core;
+package es.uvigo.esei.dai.hybridserver;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.xml.ws.Endpoint;
 
-import es.uvigo.esei.dai.hybridserver.HybridServerServiceImpl;
 import es.uvigo.esei.dai.hybridserver.configuration.Configuration;
 import es.uvigo.esei.dai.hybridserver.dao.DaoHTML;
 import es.uvigo.esei.dai.hybridserver.dao.DaoXML;

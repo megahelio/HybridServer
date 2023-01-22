@@ -38,7 +38,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import es.uvigo.esei.dai.hybridserver.core.HybridServer;
+import es.uvigo.esei.dai.hybridserver.HybridServer;
 import es.uvigo.esei.dai.hybridserver.utils.JdbcTestCase;
 
 public class ClientRequestsWithDatabaseTest extends JdbcTestCase {

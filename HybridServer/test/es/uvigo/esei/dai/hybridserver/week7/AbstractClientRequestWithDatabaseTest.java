@@ -43,7 +43,7 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.rules.Timeout;
 
-import es.uvigo.esei.dai.hybridserver.core.HybridServer;
+import es.uvigo.esei.dai.hybridserver.HybridServer;
 import es.uvigo.esei.dai.hybridserver.utils.JdbcTestCase;
 
 public abstract class AbstractClientRequestWithDatabaseTest 

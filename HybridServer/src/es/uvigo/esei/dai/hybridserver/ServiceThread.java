@@ -1,4 +1,4 @@
-package es.uvigo.esei.dai.hybridserver.core;
+package es.uvigo.esei.dai.hybridserver;
 
 import java.io.BufferedReader;
 import java.io.IOException;
