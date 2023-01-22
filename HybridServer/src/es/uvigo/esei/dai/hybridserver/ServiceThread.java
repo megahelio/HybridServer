@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-import es.uvigo.esei.dai.hybridserver.configuration.Configuration;
 import es.uvigo.esei.dai.hybridserver.controllers.HTMLController;
 import es.uvigo.esei.dai.hybridserver.controllers.XMLController;
 import es.uvigo.esei.dai.hybridserver.controllers.XSDController;

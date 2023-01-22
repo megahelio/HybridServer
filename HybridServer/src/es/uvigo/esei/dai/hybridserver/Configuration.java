@@ -1,8 +1,10 @@
-package es.uvigo.esei.dai.hybridserver.configuration;
+package es.uvigo.esei.dai.hybridserver;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+
+import es.uvigo.esei.dai.hybridserver.configuration.ServerConfiguration;
 
 public class Configuration {
 	private final int DEFAULT_httpPort = 8888;

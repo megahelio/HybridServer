@@ -7,6 +7,8 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import es.uvigo.esei.dai.hybridserver.Configuration;
+
 public class ConfigurationContentHandler extends DefaultHandler {
 
     Configuration configuration;

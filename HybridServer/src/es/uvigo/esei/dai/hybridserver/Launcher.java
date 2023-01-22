@@ -6,9 +6,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Properties;
 
-import es.uvigo.esei.dai.hybridserver.configuration.Configuration;
-import es.uvigo.esei.dai.hybridserver.configuration.XMLConfigurationLoader;
-
 public class Launcher {
 
 	public static void main(String[] args) {
