@@ -10,26 +10,28 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.uvigo.esei.dai.hybridserver.core.ConnectionPool;
-
 public class DaoHTML implements DaoInterface {
 
-	private ConnectionPool connectionPool;
+	private String url;
+	private String user;
+	private String password;
 
 	/**
 	 * @param url
 	 * @param user
 	 * @param password
 	 */
-	 public DaoHTML(ConnectionPool connectionPool) {
-	        this.connectionPool = connectionPool;
-	    }
+	public DaoHTML(String url, String user, String password) {
+		this.url = url;
+		this.user = user;
+		this.password = password;
+	}
 
 
 	@Override
 	public String addPage(String content) {
 		String uuid = UUIDgenerator.generate();
-		try (Connection connection = connectionPool.getConnection()) {
+		try (Connection connection = DriverManager.getConnection(this.url, this.user, this.password)) {
 			try (PreparedStatement statement = connection
 					.prepareStatement("INSERT INTO HTML (uuid, content) VALUES (?, ?)",
 							Statement.RETURN_GENERATED_KEYS)) {
@@ -39,11 +41,7 @@ public class DaoHTML implements DaoInterface {
 				if (statement.executeUpdate() != 1)
 					throw new SQLException("Error al insertar");
 
-			}  catch (SQLException e) {
-	            throw new RuntimeException(e);
-	        } finally {
-	            connectionPool.returnConnection(connection);
-	        }
+			}
 		} catch (SQLException e) {
 			uuid = null;
 			throw new RuntimeException(e);
@@ -105,8 +103,6 @@ public class DaoHTML implements DaoInterface {
 					}
 				}
 			}
-			
-			
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}

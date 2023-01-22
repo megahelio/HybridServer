@@ -20,14 +20,10 @@ package es.uvigo.esei.dai.hybridserver.core;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.sql.Connection;
-import java.sql.SQLException;
 
 import javax.xml.ws.Endpoint;
 
@@ -50,21 +46,16 @@ public class HybridServer {
 	private DaoHTML daoHTML;
 	private DaoXSD daoXSD;
 	private DaoXSLT daoXSLT;
-	
-	 private ConnectionPool connectionPool;
 
 	private Endpoint endpoint;
 	private HybridServerServiceImpl hybridServerServiceImpl;
 
 	public HybridServer() {
 		System.out.println("constructor vacío");
-		
-
 		this.configuration = new Configuration();
-		
-		this.connectionPool = new ConnectionPool(this.configuration.getDbURL(), this.configuration.getDbUser(), this.configuration.getDbPassword(), this.configuration.getNumClients());
 
-		this.daoHTML = new DaoHTML(connectionPool);
+		this.daoHTML = new DaoHTML(this.configuration.getDbURL(), this.configuration.getDbUser(),
+				this.configuration.getDbPassword());
 
 		this.daoXML = new DaoXML(this.configuration.getDbURL(), this.configuration.getDbUser(),
 				this.configuration.getDbPassword());
@@ -84,12 +75,11 @@ public class HybridServer {
 
 	public HybridServer(Properties properties) {
 		System.out.println("constructor properties");
-		
+
 		this.configuration = new Configuration(properties);
 
-        this.connectionPool = new ConnectionPool(properties.getProperty("db.url"), properties.getProperty("db.user"), properties.getProperty("db.password"), (Integer.parseInt(properties.getProperty("db.poolsize"))));
-		
-		this.daoHTML = new DaoHTML(connectionPool);
+		this.daoHTML = new DaoHTML(this.configuration.getDbURL(), this.configuration.getDbUser(),
+				this.configuration.getDbPassword());
 
 		this.daoXML = new DaoXML(this.configuration.getDbURL(), this.configuration.getDbUser(),
 				this.configuration.getDbPassword());
@@ -106,12 +96,10 @@ public class HybridServer {
 
 	public HybridServer(Configuration configuration) {
 		System.out.println("constructor configuration");
-		
 		this.configuration = configuration;
-		
-		this.connectionPool = new ConnectionPool(this.configuration.getDbURL(), this.configuration.getDbUser(), this.configuration.getDbPassword(), this.configuration.getNumClients());
 
-		this.daoHTML = new DaoHTML(connectionPool);
+		this.daoHTML = new DaoHTML(this.configuration.getDbURL(), this.configuration.getDbUser(),
+				this.configuration.getDbPassword());
 
 		this.daoXML = new DaoXML(this.configuration.getDbURL(), this.configuration.getDbUser(),
 				this.configuration.getDbPassword());
@@ -184,9 +172,6 @@ public class HybridServer {
 
 	public void stop() {
 		System.out.println("HybridServer Stop");
-		
-		this.connectionPool.stop();
-		
 		this.stop = true;
 
 		try (Socket socket = new Socket("localhost", getPort())) {
