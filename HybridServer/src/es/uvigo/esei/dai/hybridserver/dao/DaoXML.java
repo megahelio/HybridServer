@@ -9,7 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DaoXML implements DaoInterface {
+public class DaoXML{
 
 	private String url;
 	private String user;
@@ -26,7 +26,7 @@ public class DaoXML implements DaoInterface {
 		this.password = password;
 	}
 
-	@Override
+	
 	public String addPage(String content) {
 		String uuid = UUIDgenerator.generate();
 		try (Connection connection = DriverManager.getConnection(this.url, this.user, this.password)) {
@@ -48,10 +48,10 @@ public class DaoXML implements DaoInterface {
 		return uuid;
 	}
 
-	@Override
+	
 	public void deletePage(String id) {
 		try (Connection connection = DriverManager.getConnection(this.url, this.user, this.password)) {
-			try (PreparedStatement statement = connection.prepareStatement("DELETE FROM xml WHERE uuid=?")) {
+			try (PreparedStatement statement = connection.prepareStatement("DELETE FROM XML WHERE uuid=?")) {
 				statement.setString(1, id);
 
 				if (statement.executeUpdate() != 1)
@@ -63,35 +63,29 @@ public class DaoXML implements DaoInterface {
 
 	}
 
-	@Override
-	public String listPages() {
-		StringBuilder toRet = new StringBuilder();
+	
+	public List<String> listPages() {
+		final List<String> xml = new ArrayList<>();
 		try (Connection connection = DriverManager.getConnection(this.url, this.user, this.password)) {
 			try (Statement statement = connection.createStatement()) {
-				try (ResultSet result = statement.executeQuery("SELECT * FROM xml")) {
-					final List<String> xml = new ArrayList<>();
+				try (ResultSet result = statement.executeQuery("SELECT * FROM XML")) {
 
 					while (result.next()) {
 						xml.add(result.getString("uuid"));
 					}
-
-					for (String i : xml) {
-						toRet.append(i + "\n");
-					}
-
 				}
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
-		return toRet.toString();
+		return xml;
 	}
 
-	@Override
+	
 	public String get(String id) {
 		String toret = null;
 		try (Connection connection = DriverManager.getConnection(this.url, this.user, this.password)) {
-			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM xml WHERE uuid=?")) {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM XML WHERE uuid=?")) {
 				statement.setString(1, id);
 
 				try (ResultSet result = statement.executeQuery()) {
@@ -106,11 +100,11 @@ public class DaoXML implements DaoInterface {
 		return toret;
 	}
 
-	@Override
+	
 	public boolean exist(String id) {
 		boolean toret = false;
 		try (Connection connection = DriverManager.getConnection(this.url, this.user, this.password)) {
-			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM xml WHERE uuid=?")) {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM XML WHERE uuid=?")) {
 				statement.setString(1, id);
 				try (ResultSet result = statement.executeQuery()) {
 					toret = result.next();

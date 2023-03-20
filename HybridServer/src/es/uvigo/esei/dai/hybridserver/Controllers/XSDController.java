@@ -9,27 +9,31 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 
 import es.uvigo.esei.dai.hybridserver.HybridServerService;
-import es.uvigo.esei.dai.hybridserver.configuration.ServerConfiguration;
+import es.uvigo.esei.dai.hybridserver.ServerConfiguration;
 import es.uvigo.esei.dai.hybridserver.controllers.exceptions.MissedParameterException;
 import es.uvigo.esei.dai.hybridserver.dao.DaoXSD;
 import es.uvigo.esei.dai.hybridserver.dao.UUIDgenerator;
 import es.uvigo.esei.dai.hybridserver.http.HTTPRequest;
 import es.uvigo.esei.dai.hybridserver.http.HTTPResponse;
 import es.uvigo.esei.dai.hybridserver.http.HTTPResponseStatus;
+import es.uvigo.esei.dai.hybridserver.http.MIME;
 
-public class XSDController implements GenericController {
-    private DaoXSD dao;
+public class XSDController  {
+    private DaoXSD daoXSD;
     private List<ServerConfiguration> servers;
+    private int port;
 
     /**
      * @param dao
+     * @param i 
      */
-    public XSDController(DaoXSD dao, List<ServerConfiguration> servers) {
-        this.dao = dao;
+    public XSDController(DaoXSD dao, List<ServerConfiguration> servers, int port) {
+        this.daoXSD = dao;
         this.servers = servers;
+        this.port = port;
     }
 
-    @Override
+    
     public HTTPResponse get(HTTPRequest request) {
         HTTPResponse response = new HTTPResponse();
 
@@ -37,7 +41,7 @@ public class XSDController implements GenericController {
         if (UUIDgenerator.validate(request.getResourceParameters().get("uuid"))) {
           //  System.out.println("uuid de la request: valida");
 
-            String content = this.dao.get(request.getResourceParameters().get("uuid"));
+            String content = this.daoXSD.get(request.getResourceParameters().get("uuid"));
           //  System.out.println("Contenido del uuid en la BD: " + content);
             if (content == null) {
                 try {
@@ -89,7 +93,7 @@ public class XSDController implements GenericController {
         return response;
     }
 
-    @Override
+    
     public HTTPResponse post(HTTPRequest request) {
         String nuevaPaginaUuid;
         HTTPResponse response = new HTTPResponse();
@@ -98,7 +102,7 @@ public class XSDController implements GenericController {
             if (!keys.contains("xsd")) {
                 throw new MissedParameterException("No xsd found");
             }
-            nuevaPaginaUuid = this.dao.addPage(request.getResourceParameters().get("xsd"));// NullPointerException
+            nuevaPaginaUuid = this.daoXSD.addPage(request.getResourceParameters().get("xsd"));// NullPointerException
             response.setContent(
                     "<a href=\"xsd?uuid=" + nuevaPaginaUuid + "\">" + nuevaPaginaUuid + "</a>");
             response.setStatus(HTTPResponseStatus.S200);
@@ -108,11 +112,11 @@ public class XSDController implements GenericController {
         return response;
     }
 
-    @Override
+    
     public HTTPResponse delete(HTTPRequest request) {
         HTTPResponse response = new HTTPResponse();
         try {
-            this.dao.deletePage(request.getResourceParameters().get("uuid"));
+            this.daoXSD.deletePage(request.getResourceParameters().get("uuid"));
             response.setStatus(HTTPResponseStatus.S200);
         } catch (RuntimeException e) {
             response.setStatus(HTTPResponseStatus.S500);
@@ -120,11 +124,18 @@ public class XSDController implements GenericController {
         return response;
     }
 
-    @Override
+    
     public HTTPResponse list(HTTPRequest request) {
         HTTPResponse response = new HTTPResponse();
-        String fullList = "<h1>LocalHost</h1>\n";
-        fullList = fullList.concat(this.dao.listPages());
+        String fullList = "<h1>XSD List</h1><br>";
+        fullList=fullList.concat("<h1>LocalHost</h1><br>");
+        fullList=fullList.concat("<ul>");
+        for (String uuid : this.daoXSD.listPages()) {
+        	fullList = fullList.concat("<li><a href=http://localhost:" + port + "/xsd?uuid=" + uuid + ">"
+					+ uuid + "</a>" + "</li>");
+		}
+        fullList=fullList.concat("</ul>");
+
 
         for (ServerConfiguration server : this.servers) {
 
@@ -143,8 +154,14 @@ public class XSDController implements GenericController {
                     Service service = Service.create(url, name);
 
                     HybridServerService ws = service.getPort(HybridServerService.class);
-                    fullList = fullList.concat("<h1>" + server.getName() + "</h1>\n");
-                    fullList = fullList.concat(ws.listPagesXSD());
+                    fullList = fullList.concat("<html><body><h1>" + server.getName() + "</h1>\n");
+                    fullList=fullList.concat("<ul>");
+                    for (String uuid : ws.listPagesXSD()) {
+                    	fullList = fullList.concat("<li><a href="+server.getHttpAddress()+ "xsd?uuid=" + uuid + ">"
+            					+ uuid + "</a>" + "</li>");
+            		}
+                    fullList=fullList.concat("</ul>");
+                    fullList = fullList.concat("</body></html>");
                 } catch (MalformedURLException e) {
                     throw new RuntimeException("URL MALFORMED, server skipped");
                 }
@@ -152,6 +169,7 @@ public class XSDController implements GenericController {
         }
 
         response.setContent(fullList);
+        response.putParameter("Content-type", MIME.TEXT_HTML.getMime());
       //  System.out.println("ResponseListBody: " + response.getContent());
         response.setStatus(HTTPResponseStatus.S200);
         return response;

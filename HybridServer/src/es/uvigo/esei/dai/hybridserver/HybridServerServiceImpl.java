@@ -1,5 +1,7 @@
 package es.uvigo.esei.dai.hybridserver;
 
+import java.util.List;
+
 import javax.jws.WebService;
 
 import es.uvigo.esei.dai.hybridserver.dao.DaoHTML;
@@ -35,7 +37,7 @@ public class HybridServerServiceImpl implements HybridServerService {
     }
 
     @Override
-    public String listPagesHTML() {
+    public List<String> listPagesHTML() {
 
         return daoHTML.listPages();
     }
@@ -59,7 +61,7 @@ public class HybridServerServiceImpl implements HybridServerService {
     }
 
     @Override
-    public String listPagesXML() {
+    public List<String> listPagesXML() {
         return daoXML.listPages();
     }
 
@@ -82,7 +84,7 @@ public class HybridServerServiceImpl implements HybridServerService {
     }
 
     @Override
-    public String listPagesXSD() {
+    public List<String> listPagesXSD() {
         return daoXSD.listPages();
     }
 
@@ -104,7 +106,7 @@ public class HybridServerServiceImpl implements HybridServerService {
     }
 
     @Override
-    public String listPagesXSLT() {
+    public List<String> listPagesXSLT() {
 
         return daoXSLT.listPages();
     }

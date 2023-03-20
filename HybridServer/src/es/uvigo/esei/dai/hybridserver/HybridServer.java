@@ -74,6 +74,7 @@ public class HybridServer {
 	public HybridServer(Properties properties) {
 		System.out.println("constructor properties");
 
+		System.out.println(properties);
 		this.configuration = new Configuration(properties);
 
 		this.daoHTML = new DaoHTML(this.configuration.getDbURL(), this.configuration.getDbUser(),
@@ -123,16 +124,15 @@ public class HybridServer {
 		if (this.configuration.getWebServiceURL() != null) {
 			System.out.println("this.configuration.getWebServiceURL(): " + this.configuration.getWebServiceURL());
 			System.out.println("DAO INFO: " + this.configuration.getDbURL() + " " + this.configuration.getDbUser() + " "
-					+
-					this.configuration.getDbPassword());
-			endpoint = Endpoint.publish(this.configuration.getWebServiceURL(),
-					hybridServerServiceImpl);
+					+ this.configuration.getDbPassword());
+
 		}
 		this.serverThread = new Thread() {
 			@Override
 			public void run() {
 				System.out.println("configuration.getHttpPort(): " + configuration.getHttpPort());
 				try (final ServerSocket serverSocket = new ServerSocket(configuration.getHttpPort())) {
+					endpoint = Endpoint.publish(configuration.getWebServiceURL(), hybridServerServiceImpl);
 					// try (final ServerSocket serverSocket = new
 					// ServerSocket(Integer.parseInt(prop.getProperty("port")))) {
 					threadPool = Executors.newFixedThreadPool(configuration.getNumClients());

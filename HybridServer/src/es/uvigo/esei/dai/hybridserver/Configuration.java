@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import es.uvigo.esei.dai.hybridserver.configuration.ServerConfiguration;
-
 public class Configuration {
 	private final int DEFAULT_httpPort = 8888;
 	private final int DEFAULT_numClients = 50;

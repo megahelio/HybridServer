@@ -51,7 +51,7 @@ public class DaoXSLT {
 	public void deletePage(String id) {
 
 		try (Connection connection = DriverManager.getConnection(this.url, this.user, this.password)) {
-			try (PreparedStatement statement = connection.prepareStatement("DELETE FROM xslt WHERE uuid=?")) {
+			try (PreparedStatement statement = connection.prepareStatement("DELETE FROM XSLT WHERE uuid=?")) {
 				statement.setString(1, id);
 
 				if (statement.executeUpdate() != 1)
@@ -63,27 +63,21 @@ public class DaoXSLT {
 
 	}
 
-	public String listPages() {
-		StringBuilder toRet = new StringBuilder();
+	public List<String> listPages() {
+		final List<String> xslt = new ArrayList<>();
 		try (Connection connection = DriverManager.getConnection(this.url, this.user, this.password)) {
 			try (Statement statement = connection.createStatement()) {
-				try (ResultSet result = statement.executeQuery("SELECT * FROM xslt")) {
-					final List<String> xslt = new ArrayList<>();
+				try (ResultSet result = statement.executeQuery("SELECT * FROM XSLT")) {
 
 					while (result.next()) {
 						xslt.add(result.getString("uuid"));
 					}
-
-					for (String i : xslt) {
-						toRet.append(i + "\n");
-					}
-
 				}
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
-		return toRet.toString();
+		return xslt;
 	}
 
 	public String getContent(String id) {
@@ -92,7 +86,7 @@ public class DaoXSLT {
 		String toret = null;
 
 		try (Connection connection = DriverManager.getConnection(this.url, this.user, this.password)) {
-			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM xslt WHERE uuid=?")) {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM XSLT WHERE uuid=?")) {
 				statement.setString(1, id);
 
 				try (ResultSet result = statement.executeQuery()) {
@@ -112,7 +106,7 @@ public class DaoXSLT {
 		// la columna xsd
 		String toret = null;
 		try (Connection connection = DriverManager.getConnection(this.url, this.user, this.password)) {
-			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM xslt WHERE uuid=?")) {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM XSLT WHERE uuid=?")) {
 				statement.setString(1, id);
 
 				try (ResultSet result = statement.executeQuery()) {
@@ -130,7 +124,7 @@ public class DaoXSLT {
 	public boolean exist(String id) {
 		boolean toret = false;
 		try (Connection connection = DriverManager.getConnection(this.url, this.user, this.password)) {
-			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM xslt WHERE uuid=?")) {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM XSLT WHERE uuid=?")) {
 				statement.setString(1, id);
 				try (ResultSet result = statement.executeQuery()) {
 					toret = result.next();

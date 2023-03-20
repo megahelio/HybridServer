@@ -38,7 +38,7 @@ import org.junit.rules.Timeout;
 
 import es.uvigo.esei.dai.hybridserver.Configuration;
 import es.uvigo.esei.dai.hybridserver.HybridServer;
-import es.uvigo.esei.dai.hybridserver.configuration.ServerConfiguration;
+import es.uvigo.esei.dai.hybridserver.ServerConfiguration;
 import es.uvigo.esei.dai.hybridserver.http.MIME;
 import es.uvigo.esei.dai.hybridserver.utils.JdbcTestCase;
 

@@ -9,7 +9,7 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 
 import es.uvigo.esei.dai.hybridserver.HybridServerService;
-import es.uvigo.esei.dai.hybridserver.configuration.ServerConfiguration;
+import es.uvigo.esei.dai.hybridserver.ServerConfiguration;
 import es.uvigo.esei.dai.hybridserver.controllers.exceptions.InvalidParameterException;
 import es.uvigo.esei.dai.hybridserver.controllers.exceptions.MissedParameterException;
 import es.uvigo.esei.dai.hybridserver.dao.DaoXSD;
@@ -18,22 +18,26 @@ import es.uvigo.esei.dai.hybridserver.dao.UUIDgenerator;
 import es.uvigo.esei.dai.hybridserver.http.HTTPRequest;
 import es.uvigo.esei.dai.hybridserver.http.HTTPResponse;
 import es.uvigo.esei.dai.hybridserver.http.HTTPResponseStatus;
+import es.uvigo.esei.dai.hybridserver.http.MIME;
 
-public class XSLTController implements GenericController {
+public class XSLTController {
     private DaoXSLT daoXSLT;
     private DaoXSD daoXSD;
     private List<ServerConfiguration> servers;
+    private int port;
 
     /**
      * @param daoXSLT
+     * @param port 
      */
-    public XSLTController(DaoXSLT daoXSLT, DaoXSD daoXSD, List<ServerConfiguration> servers) {
+    public XSLTController(DaoXSLT daoXSLT, DaoXSD daoXSD, List<ServerConfiguration> servers, int port) {
         this.daoXSLT = daoXSLT;
         this.daoXSD = daoXSD;
         this.servers = servers;
+        this.port = port;
     }
 
-    @Override
+    
     public HTTPResponse get(HTTPRequest request) {
         HTTPResponse response = new HTTPResponse();
 
@@ -95,7 +99,7 @@ public class XSLTController implements GenericController {
         return response;
     }
 
-    @Override
+    
     public HTTPResponse post(HTTPRequest request) {
         String nuevaPaginaUuid;
         HTTPResponse response = new HTTPResponse();
@@ -130,7 +134,7 @@ public class XSLTController implements GenericController {
         return response;
     }
 
-    @Override
+    
     public HTTPResponse delete(HTTPRequest request) {
         HTTPResponse response = new HTTPResponse();
         try {
@@ -142,11 +146,18 @@ public class XSLTController implements GenericController {
         return response;
     }
 
-    @Override
+    
     public HTTPResponse list(HTTPRequest request) {
         HTTPResponse response = new HTTPResponse();
-        String fullList = "<h1>LocalHost</h1>\n";
-        fullList = fullList.concat(this.daoXSLT.listPages());
+        
+        String fullList = "<h1>XSLT List</h1><br>";
+        fullList=fullList.concat("<h1>LocalHost</h1><br>");
+        fullList=fullList.concat("<ul>");
+        for (String uuid : this.daoXSLT.listPages()) {
+        	fullList = fullList.concat("<li><a href=http://localhost:" + port + "/xslt?uuid=" + uuid + ">"
+					+ uuid + "</a>" + "</li>");
+		}
+        fullList=fullList.concat("</ul>");
 
         for (ServerConfiguration server : this.servers) {
 
@@ -165,8 +176,15 @@ public class XSLTController implements GenericController {
                     Service service = Service.create(url, name);
 
                     HybridServerService ws = service.getPort(HybridServerService.class);
-                    fullList = fullList.concat("<h1>" + server.getName() + "</h1>\n");
-                    fullList = fullList.concat(ws.listPagesXSLT());
+                    fullList = fullList.concat("<html><body><h1>" + server.getName() + "</h1>\n");
+                    fullList=fullList.concat("<ul>");
+                    for (String uuid : ws.listPagesXSLT()) {
+                    	fullList = fullList.concat("<li><a href="+server.getHttpAddress() + "xslt?uuid=" + uuid + ">"
+            					+ uuid + "</a>" + "</li>");
+            		}
+                    fullList=fullList.concat("</ul>");
+
+                    fullList = fullList.concat("</body></html>");
                 } catch (MalformedURLException e) {
                     throw new RuntimeException("URL MALFORMED, server skipped");
                 }
@@ -174,6 +192,7 @@ public class XSLTController implements GenericController {
         }
 
         response.setContent(fullList);
+        response.putParameter("Content-type", MIME.TEXT_HTML.getMime());
         // System.out.println("ResponseListBody: " + response.getContent());
         response.setStatus(HTTPResponseStatus.S200);
         return response;

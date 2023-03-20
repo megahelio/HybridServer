@@ -1,5 +1,7 @@
 package es.uvigo.esei.dai.hybridserver;
 
+import java.util.List;
+
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 
@@ -14,7 +16,7 @@ public interface HybridServerService {
     public void deletePageHTML(String id);
 
     @WebMethod
-    public String listPagesHTML();
+    public List<String> listPagesHTML();
 
     @WebMethod
     public String getHTML(String id);
@@ -27,7 +29,7 @@ public interface HybridServerService {
     public void deletePageXML(String id);
 
     @WebMethod
-    public String listPagesXML();
+    public List<String> listPagesXML();
 
     @WebMethod
     public String getXML(String id);
@@ -40,7 +42,7 @@ public interface HybridServerService {
     public void deletePageXSD(String id);
 
     @WebMethod
-    public String listPagesXSD();
+    public List<String> listPagesXSD();
 
     @WebMethod
     public String getXSD(String id);
@@ -53,7 +55,7 @@ public interface HybridServerService {
     public void deletePageXSLT(String id);
 
     @WebMethod
-    public String listPagesXSLT();
+    public List<String> listPagesXSLT();
 
     @WebMethod
     public String getXSLT(String id);

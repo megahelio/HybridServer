@@ -9,7 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DaoXSD implements DaoInterface {
+public class DaoXSD  {
 
 	private String url;
 	private String user;
@@ -26,7 +26,7 @@ public class DaoXSD implements DaoInterface {
 		this.password = password;
 	}
 
-	@Override
+	
 	public String addPage(String content) {
 		String uuid = UUIDgenerator.generate();
 		try (Connection connection = DriverManager.getConnection(this.url, this.user, this.password)) {
@@ -48,10 +48,10 @@ public class DaoXSD implements DaoInterface {
 		return uuid;
 	}
 
-	@Override
+	
 	public void deletePage(String id) {
 		try (Connection connection = DriverManager.getConnection(this.url, this.user, this.password)) {
-			try (PreparedStatement statement = connection.prepareStatement("DELETE FROM xsd WHERE uuid=?")) {
+			try (PreparedStatement statement = connection.prepareStatement("DELETE FROM XSD WHERE uuid=?")) {
 				statement.setString(1, id);
 
 				if (statement.executeUpdate() != 1)
@@ -62,36 +62,28 @@ public class DaoXSD implements DaoInterface {
 		}
 
 	}
-
-	@Override
-	public String listPages() {
-		StringBuilder toRet = new StringBuilder();
+	public List<String> listPages() {
+		final List<String> xsd = new ArrayList<>();
 		try (Connection connection = DriverManager.getConnection(this.url, this.user, this.password)) {
 			try (Statement statement = connection.createStatement()) {
-				try (ResultSet result = statement.executeQuery("SELECT * FROM xsd")) {
-					final List<String> xsd = new ArrayList<>();
+				try (ResultSet result = statement.executeQuery("SELECT * FROM XSD")) {
 
 					while (result.next()) {
 						xsd.add(result.getString("uuid"));
 					}
-
-					for (String i : xsd) {
-						toRet.append(i + "\n");
-					}
-
 				}
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
-		return toRet.toString();
+		return xsd;
 	}
 
-	@Override
+	
 	public String get(String id) {
 		String toret = null;
 		try (Connection connection = DriverManager.getConnection(this.url, this.user, this.password)) {
-			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM xsd WHERE uuid=?")) {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM XSD WHERE uuid=?")) {
 				statement.setString(1, id);
 
 				try (ResultSet result = statement.executeQuery()) {
@@ -106,11 +98,11 @@ public class DaoXSD implements DaoInterface {
 		return toret;
 	}
 
-	@Override
+	
 	public boolean exist(String id) {
 		Boolean toret = false;
 		try (Connection connection = DriverManager.getConnection(this.url, this.user, this.password)) {
-			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM xsd WHERE uuid=?")) {
+			try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM XSD WHERE uuid=?")) {
 				statement.setString(1, id);
 				try (ResultSet result = statement.executeQuery()) {
 					toret = result.next();

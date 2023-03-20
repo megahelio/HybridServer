@@ -19,9 +19,6 @@ package es.uvigo.esei.dai.hybridserver;
 
 import java.io.File;
 
-import es.uvigo.esei.dai.hybridserver.configuration.ConfigurationContentHandler;
-import es.uvigo.esei.dai.hybridserver.xml.XMLUtility;
-
 public class XMLConfigurationLoader {
 	public static Configuration load(File xmlFile) throws Exception {
 		ConfigurationContentHandler handler = new ConfigurationContentHandler();
