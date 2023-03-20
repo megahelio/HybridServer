@@ -45,7 +45,7 @@ public class HybridServer {
 	private DaoXSD daoXSD;
 	private DaoXSLT daoXSLT;
 
-	private Endpoint endpoint;
+	//private Endpoint endpoint;
 	private HybridServerServiceImpl hybridServerServiceImpl;
 
 	public HybridServer() {
@@ -64,7 +64,7 @@ public class HybridServer {
 		this.daoXSLT = new DaoXSLT(this.configuration.getDbURL(), this.configuration.getDbUser(),
 				this.configuration.getDbPassword());
 
-		this.endpoint = null;
+		////this.endpoint = null;
 
 		this.hybridServerServiceImpl = new HybridServerServiceImpl(this.daoHTML, this.daoXML, this.daoXSD,
 				this.daoXSLT);
@@ -88,7 +88,7 @@ public class HybridServer {
 
 		this.daoXSLT = new DaoXSLT(this.configuration.getDbURL(), this.configuration.getDbUser(),
 				this.configuration.getDbPassword());
-		this.endpoint = null;
+		//this.endpoint = null;
 		this.hybridServerServiceImpl = new HybridServerServiceImpl(this.daoHTML, this.daoXML, this.daoXSD,
 				this.daoXSLT);
 	}
@@ -108,7 +108,7 @@ public class HybridServer {
 
 		this.daoXSLT = new DaoXSLT(this.configuration.getDbURL(), this.configuration.getDbUser(),
 				this.configuration.getDbPassword());
-		this.endpoint = null;
+		//this.endpoint = null;
 		this.hybridServerServiceImpl = new HybridServerServiceImpl(this.daoHTML, this.daoXML, this.daoXSD,
 				this.daoXSLT);
 
@@ -132,7 +132,7 @@ public class HybridServer {
 			public void run() {
 				System.out.println("configuration.getHttpPort(): " + configuration.getHttpPort());
 				try (final ServerSocket serverSocket = new ServerSocket(configuration.getHttpPort())) {
-					endpoint = Endpoint.publish(configuration.getWebServiceURL(), hybridServerServiceImpl);
+					//endpoint = Endpoint.publish(configuration.getWebServiceURL(), hybridServerServiceImpl);
 					// try (final ServerSocket serverSocket = new
 					// ServerSocket(Integer.parseInt(prop.getProperty("port")))) {
 					threadPool = Executors.newFixedThreadPool(configuration.getNumClients());
@@ -193,9 +193,9 @@ public class HybridServer {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		if (endpoint != null) {
-			endpoint.stop();
-		}
+		//if (endpoint != null) {
+			//endpoint.stop();
+		//}
 		hybridServerServiceImpl.close();
 
 	}

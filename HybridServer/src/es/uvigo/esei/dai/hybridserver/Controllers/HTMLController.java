@@ -131,7 +131,7 @@ public class HTMLController {
 			// si contiene html creamos la entrada en la BD
 			nuevaPaginaUuid = this.dao.addPage(request.getResourceParameters().get("html"));
 			// generamos respuesta con el enlace
-			response.setContent("<a href=\"/html?uuid=" + nuevaPaginaUuid + "\">" + nuevaPaginaUuid + "</a>");
+			response.setContent("<a href=\"html?uuid=" + nuevaPaginaUuid + "\">" + nuevaPaginaUuid + "</a>");
 			response.setStatus(HTTPResponseStatus.S200);
 
 		} catch (MissedParameterException e) {
