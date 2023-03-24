@@ -168,4 +168,22 @@ public class Configuration {
 	public void setServers(List<ServerConfiguration> servers) {
 		this.servers = servers;
 	}
+	 @Override
+	    public String toString() {
+	        String toret= "Configuration{" +
+	                "httpPort=" + httpPort +
+	                ", numClients=" + numClients +
+	                ", webServiceURL='" + webServiceURL + '\'' +
+	                ", dbUser='" + dbUser + '\'' +
+	                ", dbPassword='" + dbPassword + '\'' +
+	                ", dbURL='" + dbURL + '\'' +
+	                ", servers=\n";
+	        for (ServerConfiguration serverConfiguration : servers) {
+	        	toret.concat(serverConfiguration.toString()+"\n");
+			}
+	        toret.concat("\n}");
+	        
+	        return toret;
+	    }
+	
 }

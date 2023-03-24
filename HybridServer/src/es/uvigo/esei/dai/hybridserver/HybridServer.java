@@ -45,12 +45,13 @@ public class HybridServer {
 	private DaoXSD daoXSD;
 	private DaoXSLT daoXSLT;
 
-	//private Endpoint endpoint;
+	private Endpoint endpoint;
 	private HybridServerServiceImpl hybridServerServiceImpl;
 
 	public HybridServer() {
 		System.out.println("constructor vacío");
 		this.configuration = new Configuration();
+		System.out.println(this.configuration.toString());
 
 		this.daoHTML = new DaoHTML(this.configuration.getDbURL(), this.configuration.getDbUser(),
 				this.configuration.getDbPassword());
@@ -64,7 +65,7 @@ public class HybridServer {
 		this.daoXSLT = new DaoXSLT(this.configuration.getDbURL(), this.configuration.getDbUser(),
 				this.configuration.getDbPassword());
 
-		////this.endpoint = null;
+		this.endpoint = null;
 
 		this.hybridServerServiceImpl = new HybridServerServiceImpl(this.daoHTML, this.daoXML, this.daoXSD,
 				this.daoXSLT);
@@ -74,8 +75,9 @@ public class HybridServer {
 	public HybridServer(Properties properties) {
 		System.out.println("constructor properties");
 
-		System.out.println(properties);
+		System.out.println(properties.toString());
 		this.configuration = new Configuration(properties);
+		System.out.println(this.configuration.toString());
 
 		this.daoHTML = new DaoHTML(this.configuration.getDbURL(), this.configuration.getDbUser(),
 				this.configuration.getDbPassword());
@@ -88,7 +90,7 @@ public class HybridServer {
 
 		this.daoXSLT = new DaoXSLT(this.configuration.getDbURL(), this.configuration.getDbUser(),
 				this.configuration.getDbPassword());
-		//this.endpoint = null;
+		this.endpoint = null;
 		this.hybridServerServiceImpl = new HybridServerServiceImpl(this.daoHTML, this.daoXML, this.daoXSD,
 				this.daoXSLT);
 	}
@@ -96,6 +98,7 @@ public class HybridServer {
 	public HybridServer(Configuration configuration) {
 		System.out.println("constructor configuration");
 		this.configuration = configuration;
+		System.out.println(this.configuration.toString());
 
 		this.daoHTML = new DaoHTML(this.configuration.getDbURL(), this.configuration.getDbUser(),
 				this.configuration.getDbPassword());
@@ -108,7 +111,7 @@ public class HybridServer {
 
 		this.daoXSLT = new DaoXSLT(this.configuration.getDbURL(), this.configuration.getDbUser(),
 				this.configuration.getDbPassword());
-		//this.endpoint = null;
+		this.endpoint = null;
 		this.hybridServerServiceImpl = new HybridServerServiceImpl(this.daoHTML, this.daoXML, this.daoXSD,
 				this.daoXSLT);
 
@@ -121,18 +124,14 @@ public class HybridServer {
 
 	public void start() {
 		System.out.println("HybridServer.Start: ");
-		if (this.configuration.getWebServiceURL() != null) {
-			System.out.println("this.configuration.getWebServiceURL(): " + this.configuration.getWebServiceURL());
-			System.out.println("DAO INFO: " + this.configuration.getDbURL() + " " + this.configuration.getDbUser() + " "
-					+ this.configuration.getDbPassword());
-
-		}
 		this.serverThread = new Thread() {
 			@Override
 			public void run() {
-				System.out.println("configuration.getHttpPort(): " + configuration.getHttpPort());
+
 				try (final ServerSocket serverSocket = new ServerSocket(configuration.getHttpPort())) {
-					//endpoint = Endpoint.publish(configuration.getWebServiceURL(), hybridServerServiceImpl);
+					if (configuration.getWebServiceURL() != null && hybridServerServiceImpl != null) {
+						endpoint = Endpoint.publish(configuration.getWebServiceURL(), hybridServerServiceImpl);
+					}
 					// try (final ServerSocket serverSocket = new
 					// ServerSocket(Integer.parseInt(prop.getProperty("port")))) {
 					threadPool = Executors.newFixedThreadPool(configuration.getNumClients());
@@ -169,7 +168,7 @@ public class HybridServer {
 	}
 
 	public void stop() {
-		System.out.println("HybridServer Stop");
+		System.out.println("HybridServer.Stop");
 		this.stop = true;
 
 		try (Socket socket = new Socket("localhost", getPort())) {
@@ -193,9 +192,9 @@ public class HybridServer {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		//if (endpoint != null) {
-			//endpoint.stop();
-		//}
+		if (endpoint != null) {
+			endpoint.stop();
+		}
 		hybridServerServiceImpl.close();
 
 	}

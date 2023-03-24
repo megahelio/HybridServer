@@ -1,11 +1,13 @@
 package es.uvigo.esei.dai.hybridserver.controllers;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
+import javax.xml.transform.TransformerException;
 import javax.xml.ws.Service;
 
 import es.uvigo.esei.dai.hybridserver.HybridServerService;
@@ -194,9 +196,13 @@ public class XMLController {
 							response.setStatus(HTTPResponseStatus.S404);
 							return response;
 						}
-					} catch (MalformedURLException e) {
-						// System.out.println("URL mal formada: Saltando al siguiente servidor de la
-						// lista.");
+					}
+					// catch (MalformedURLException e) {
+					// System.out.println("URL mal formada: Saltando al siguiente servidor de la
+					// lista.");
+					// }
+					catch (IOException | TransformerException exception) {
+						throw new RuntimeException(exception);
 					}
 
 				} else {
