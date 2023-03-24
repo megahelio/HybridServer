@@ -99,6 +99,7 @@ public class ServiceThread implements Runnable {
 						break;
 					case GET:
 						if (request.getResourceParameters().containsKey("uuid")) {
+							
 							response = this.xmlController.get(request);
 						} else {
 							response = this.xmlController.list(request);

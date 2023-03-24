@@ -176,6 +176,7 @@ public class XMLController {
 
 						if (foundXSLT && foundXSD) {
 							if (!XMLUtility.validateSchema(xml, xsd)) {
+
 								// Bad Request XSLT inválido (XSD del XSLT no valida XML solicitado)
 								response.setStatus(HTTPResponseStatus.S400);
 							} else {
@@ -186,7 +187,6 @@ public class XMLController {
 									response.setStatus(HTTPResponseStatus.S200);
 									return response;
 								} else {
-
 									response.setStatus(HTTPResponseStatus.S400);
 									return response;
 								}
