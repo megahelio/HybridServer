@@ -1,8 +1,5 @@
 # HybridServer
 
-Autores
-Óscar Lestón Casais
-
 General
 [-0.25] La página de bienvenida no funciona porque se ha utilizado un fichero externo que no se incluye en el empaquetado. Además, la lectura de ese fichero se hace de una forma poco correcta. Deberían haberse utilizado flujos.
 [-0.5] Existen flujos sin cerrar o cerrados de forma incorrecta. Por ejemplo, en XMLUtility.
