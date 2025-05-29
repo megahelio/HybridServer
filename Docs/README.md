@@ -1,19 +1,26 @@
 # HybridServer
 
-General
-[-0.25] La página de bienvenida no funciona porque se ha utilizado un fichero externo que no se incluye en el empaquetado. Además, la lectura de ese fichero se hace de una forma poco correcta. Deberían haberse utilizado flujos.
-[-0.5] Existen flujos sin cerrar o cerrados de forma incorrecta. Por ejemplo, en XMLUtility.
+Proyecto desarrollado para la asignatura de Desarrollo de Aplicaciones en Internet (DAI). Implementa un servidor híbrido que combina servicios web y procesamiento XML.
 
-[2/2] B1. XML
-OK
+## 📌 Características
 
+- Procesamiento de archivos XML con validación XSD y transformación XSLT.
+- Comunicación P2P entre nodos.
+- Configuración del servidor mediante archivos XML.
 
-[2/2] B2. XSD & XSLT
-OK
+## ⚠️ Notas
 
+- La página de bienvenida no funciona debido a la ausencia de un fichero externo necesario.
+- Se han identificado flujos sin cerrar correctamente en `XMLUtility`.
 
-[5/5] B3. P2P
-OK
+## 🛠️ Tecnologías
 
-[0.5/1] Configuración
-[-0.5] El XSLT de transformación de la confguración no funciona.
+- Java
+- HTML
+- XSLT
+
+## 📁 Estructura del proyecto
+
+- `Docs/`: Documentación del proyecto.
+- `HybridServer/`: Código fuente del servidor.
+- `Sql/`: Scripts SQL relacionados.
